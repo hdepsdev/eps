@@ -46,10 +46,10 @@ public class NozzleOrderHandler extends ChannelHandlerAdapter{
 		System.arraycopy(cnt, idx, totalAmountArr, 0, totalAmountArr.length);
 		
 		NozzleOrder no = new NozzleOrder();
-		no.setNozzleNumber(Long.toString(Converts.bytes2Long(nozzleCodeArr)));
+		no.setNozzleNumber(Long.toString(Converts.U32ToLong(nozzleCodeArr)));
 		no.setWorkOrder(Converts.bcd2Str(orderArr));
-		no.setOilType(Converts.bytes2Int(oilTypeArr));
-		no.setOilCategory(Converts.bytes2Int(oilCategoryArr));
+		no.setOilType(Converts.bytesToInt(oilTypeArr));
+		no.setOilCategory(Converts.bytesToInt(oilCategoryArr));
 		no.setPrice(Integer.parseInt(Converts.bcd2Str(priceArr)));
 		BigDecimal volume = new BigDecimal(Converts.bcd2Str(volumeArr));
 		no.setVolumeConsume(volume.divide(new BigDecimal(100)));

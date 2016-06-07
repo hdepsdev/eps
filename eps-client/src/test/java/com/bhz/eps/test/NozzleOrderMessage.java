@@ -1,6 +1,7 @@
 package com.bhz.eps.test;
 
 import com.bhz.eps.util.Converts;
+import com.bhz.eps.util.Utils;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -9,7 +10,7 @@ public class NozzleOrderMessage extends AbstractPosMessage {
 
 	@Override
 	public byte[] generateMessage() {
-		int nozzleCode = 123456;
+		int nozzleCode = Integer.parseInt(Utils.generate8BitNumberUUID());
 		ByteBuf bb = Unpooled.buffer();
 		
 		byte[] macByte = new byte[4];
@@ -17,7 +18,7 @@ public class NozzleOrderMessage extends AbstractPosMessage {
 		bb.writeBytes(genTPDUHeader(8 + size + 4));
 		bb.writeBytes(genBizHeader(0x70));
 		bb.writeInt(nozzleCode);
-		bb.writeBytes(Converts.str2Bcd("2016060716553312345678"));
+		bb.writeBytes(Converts.str2Bcd("20160607165533" + Utils.generate8BitNumberUUID()));
 		bb.writeByte(1);
 		bb.writeByte(1);
 		bb.writeBytes(Converts.str2Bcd("0000000597"));

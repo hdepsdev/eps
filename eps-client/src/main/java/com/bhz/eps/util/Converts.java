@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBufUtil;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -435,14 +436,31 @@ public final class Converts {
         }  
         return num;  
     }
+    public static int bytesToInt(byte[] bytes){
+    	byte[] dest = new byte[4];
+        if(bytes.length < 4){
+        	for(int j=0;j<bytes.length;j++){
+        		dest[3-j] = bytes[bytes.length-1-j];
+        	}
+        }
+        return bytes2Int(dest);
+    }
     
-    public static long bytes2Long(byte[] byteNum) {  
-        long num = 0;
-        for (int ix = 0; ix < 8; ++ix) {  
-            num <<= 8;  
-            num |= (byteNum[ix] & 0xff);  
-        }  
-        return num;  
+    public static long U32ToLong(byte[] bytes) {
+        byte[] dest = new byte[8];
+        if(bytes.length < 8){
+        	for(int j=0;j<bytes.length;j++){
+        		dest[7-j] = bytes[bytes.length-1-j];
+        	}
+        }
+        return bytes2Long(dest);
+    }
+    
+    public static long bytes2Long(byte[] bytes){
+    	ByteBuffer buffer = ByteBuffer.allocate(8);
+    	buffer.put(bytes, 0, bytes.length);
+        buffer.flip();
+        return buffer.getLong();
     }
 
     // public static byte[] long2Byte(long x) {

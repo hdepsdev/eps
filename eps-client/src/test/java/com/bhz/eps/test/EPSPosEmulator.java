@@ -1,6 +1,9 @@
 package com.bhz.eps.test;
 
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.bhz.eps.util.Converts;
 
 import io.netty.bootstrap.Bootstrap;
@@ -18,7 +21,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.CharsetUtil;
 
 public class EPSPosEmulator {
-	private void connect(String host, int port, byte[] msg) throws Exception{
+	public void connect(String host, int port, byte[] msg) throws Exception{
 		EventLoopGroup worker = new NioEventLoopGroup();
 		Bootstrap b = new Bootstrap();
 		try{
@@ -40,12 +43,36 @@ public class EPSPosEmulator {
 		}
 	}
 	public static void main(String[] args) throws Exception{
-		EPSPosEmulator ec = new EPSPosEmulator();
-//		PosConnectMessage msg = new PosConnectMessage();
-		NozzleOrderMessage msg = new NozzleOrderMessage();
-		ec.connect("localhost", 4088, msg.generateMessage());
+//		EPSPosEmulator ec = new EPSPosEmulator();
+//		PosConnectMessage msg1 = new PosConnectMessage();
+//		NozzleOrderMessage msg2 = new NozzleOrderMessage();
+//		ec.connect("localhost", 4088, msg1.generateMessage());
+//		ec.connect("localhost", 4088, msg2.generateMessage());
+		ExecutorService es = Executors.newFixedThreadPool(5);
+		for(int i=0;i<500;i++){
+			es.submit(new NozzleOrderRun());
+		}
 	}
 	
+	
+	
+	
+}
+
+class NozzleOrderRun implements Runnable{
+	
+	EPSPosEmulator ec = new EPSPosEmulator();
+
+	@Override
+	public void run() {
+		NozzleOrderMessage msg2 = new NozzleOrderMessage();
+		try {
+			ec.connect("localhost", 4088, msg2.generateMessage());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 }
 
