@@ -9,4 +9,6 @@ public class BizMessageType {
 	public static final int GET_TRANS_DETAIL = 0x06;
 	public static final int ORDER_PAY_COMPLETE = 0x07;
 	public static final int UNLOCK_ORDER = 0x08;
+	
+	public static final int BPOS_ORDER = 0x70;
 }

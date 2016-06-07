@@ -39,7 +39,10 @@ public class BizHandlerDispatcher extends ChannelHandlerAdapter {
 				break;
 			case BizMessageType.UNLOCK_ORDER:
 				break;
-				
+			case BizMessageType.BPOS_ORDER:
+				ctx.pipeline().addLast("BPOSOrder",new NozzleOrderHandler());
+				ctx.fireChannelRead(msg);
+				break;
 		}
 	}
 	

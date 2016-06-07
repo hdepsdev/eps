@@ -41,9 +41,9 @@ public class EPSPosEmulator {
 	}
 	public static void main(String[] args) throws Exception{
 		EPSPosEmulator ec = new EPSPosEmulator();
-		PosConnectMessage connMsg = new PosConnectMessage();
-		
-		ec.connect("localhost", 4088, connMsg.generateMessage());
+//		PosConnectMessage msg = new PosConnectMessage();
+		NozzleOrderMessage msg = new NozzleOrderMessage();
+		ec.connect("localhost", 4088, msg.generateMessage());
 	}
 	
 	

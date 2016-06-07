@@ -426,6 +426,24 @@ public final class Converts {
         result2[3] = (byte) (longValue);
         return result2;
     }
+    
+    public static int bytes2Int(byte[] byteNum) {  
+        int num = 0;  
+        for (int ix = 0; ix < 4; ++ix) {  
+            num <<= 8;  
+            num |= (byteNum[ix] & 0xff);  
+        }  
+        return num;  
+    }
+    
+    public static long bytes2Long(byte[] byteNum) {  
+        long num = 0;
+        for (int ix = 0; ix < 8; ++ix) {  
+            num <<= 8;  
+            num |= (byteNum[ix] & 0xff);  
+        }  
+        return num;  
+    }
 
     // public static byte[] long2Byte(long x) {
     // byte[] bb = new byte[8];

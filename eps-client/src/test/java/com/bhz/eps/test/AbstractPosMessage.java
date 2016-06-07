@@ -24,8 +24,8 @@ public abstract class AbstractPosMessage implements POSMessage {
 		ByteBuf bb = Unpooled.buffer(8);
 		byte[] stationId = Converts.str2Bcd("1010202030");
 		bb.writeBytes(stationId);
-		bb.writeShort(cmd);
-		bb.writeByte(0x01);
+		bb.writeShort(0x01);
+		bb.writeByte(cmd);
 		return bb.array();
 	}
 
