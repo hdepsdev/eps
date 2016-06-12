@@ -43,20 +43,19 @@ public class EPSPosEmulator {
 		}
 	}
 	public static void main(String[] args) throws Exception{
-//		EPSPosEmulator ec = new EPSPosEmulator();
-//		PosConnectMessage msg1 = new PosConnectMessage();
+		EPSPosEmulator ec = new EPSPosEmulator();
+		PosConnectMessage msg1 = new PosConnectMessage();
 //		NozzleOrderMessage msg2 = new NozzleOrderMessage();
-//		ec.connect("localhost", 4088, msg1.generateMessage());
+		ec.connect("localhost", 4088, msg1.generateMessage());
 //		ec.connect("localhost", 4088, msg2.generateMessage());
+		
+		/*
 		ExecutorService es = Executors.newFixedThreadPool(5);
-		for(int i=0;i<500;i++){
+		for(int i=0;i<1;i++){
 			es.submit(new NozzleOrderRun());
 		}
+		*/
 	}
-	
-	
-	
-	
 }
 
 class NozzleOrderRun implements Runnable{

@@ -1,9 +1,15 @@
 package com.bhz.eps.util;
 
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 
-public class Utils {
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
+public class Utils {
+	
+	private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+	
 	// UUID Dictionary (Alpha + Number)
 	public static String[] chars = new String[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n",
 			"o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8",
@@ -32,5 +38,23 @@ public class Utils {
 			shortBuffer.append(chars[x % 0x3E]);
 		}
 		return shortBuffer.toString();
+	}
+	
+	public static byte getSysVersion(){
+		return 0x01;
+	}
+	
+	public static String getServerTime(){
+		return sdf.format(System.currentTimeMillis());
+	}
+	
+	public static byte[] genTPDUHeader(long tpduLength,byte crc8Value){
+		ByteBuf bb = Unpooled.buffer(10);
+		bb.writeByte(0x10).writeByte(0x10);
+		bb.writeInt((int)tpduLength);
+		bb.writeByte(0x01);
+		bb.writeShort(0x0000);
+		bb.writeByte(0);
+		return bb.array();
 	}
 }

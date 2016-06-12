@@ -1,28 +1,25 @@
-package com.bhz.eps.codec;
+package com.bhz.eps.processor;
 
 import java.math.BigDecimal;
 
 import com.bhz.eps.Boot;
+import com.bhz.eps.annotation.BizProcessorSpec;
 import com.bhz.eps.entity.NozzleOrder;
+import com.bhz.eps.msg.BizMessageType;
 import com.bhz.eps.pdu.TPDU;
 import com.bhz.eps.service.NozzleOrderService;
 import com.bhz.eps.util.Converts;
 
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerAdapter;
-import io.netty.channel.ChannelHandlerContext;
-
-@ChannelHandler.Sharable
-public class NozzleOrderHandler extends ChannelHandlerAdapter{
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		// TODO Auto-generated method stub
-		super.exceptionCaught(ctx, cause);
-	}
-	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		TPDU pdu = (TPDU)msg;
-		byte[] cnt = pdu.getBody().getData().getContent();
+/**
+ * 接受处理BPOS发送的交易信息
+ * @author yaoh
+ *
+ */
+@BizProcessorSpec(msgType=BizMessageType.BPOS_ORDER)
+public class BPosOrderProcessor extends BizProcessor{
+	public void run(){
+		TPDU tpdu = (TPDU)this.msgObject;
+		byte[] cnt = tpdu.getBody().getData().getContent();
 		byte[] nozzleCodeArr = new byte[4];//油枪编号：U32
 		byte[] orderArr = new byte[11];//支付流水号：BCD 11
 		byte[] oilTypeArr = new byte[1];//油品类别：byte 1
@@ -57,7 +54,6 @@ public class NozzleOrderHandler extends ChannelHandlerAdapter{
 		
 		NozzleOrderService nos = Boot.appctx.getBean("nozzleOrderService",NozzleOrderService.class);
 		nos.addOrder(no);
-		ctx.writeAndFlush(pdu.getBody().getData().getContent());
+		channel.writeAndFlush(tpdu.getBody().getData().getContent());
 	}
 }
-

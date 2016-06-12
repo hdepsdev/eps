@@ -77,4 +77,9 @@ public class CommonTest {
 		System.out.println("Identical Amount: " + a.size());
 		
 	}
+	
+	@Test
+	public void getServerTimeServer(){
+		System.out.println(Utils.getServerTime());
+	}
 }
