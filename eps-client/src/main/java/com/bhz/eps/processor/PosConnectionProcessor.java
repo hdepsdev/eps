@@ -21,7 +21,8 @@ import io.netty.buffer.Unpooled;
 @BizProcessorSpec(msgType=BizMessageType.CONN)
 public class PosConnectionProcessor extends BizProcessor {
 
-	public void run(){
+	@Override
+	public void process() {
 		TPDU tpdu = (TPDU)this.msgObject;
 		byte[] cnt = tpdu.getBody().getData().getContent();
 		byte[] posCodeArr = new byte[10];

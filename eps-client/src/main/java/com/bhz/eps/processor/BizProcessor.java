@@ -18,7 +18,8 @@ public abstract class BizProcessor implements Runnable {
 	
 	@Override
 	public void run() {
-		
+		process();
 	}
-
+	
+	public abstract void process();
 }
