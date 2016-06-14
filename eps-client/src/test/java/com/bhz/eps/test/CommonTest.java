@@ -82,4 +82,14 @@ public class CommonTest {
 	public void getServerTimeServer(){
 		System.out.println(Utils.getServerTime());
 	}
+	
+	@Test
+	public void testArrayConcat(){
+		byte[] b1 = "hello".getBytes();
+		byte[] b2 = "world".getBytes();
+		byte[] c = Utils.concatTwoByteArray(b1, b2);
+		for(byte b:c){
+			System.out.print((char)b);
+		}
+	}
 }

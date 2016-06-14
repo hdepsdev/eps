@@ -43,18 +43,34 @@ public class EPSPosEmulator {
 		}
 	}
 	public static void main(String[] args) throws Exception{
-		EPSPosEmulator ec = new EPSPosEmulator();
-		PosConnectMessage msg1 = new PosConnectMessage();
+//		EPSPosEmulator ec = new EPSPosEmulator();
+//		PosConnectMessage msg1 = new PosConnectMessage();
 //		NozzleOrderMessage msg2 = new NozzleOrderMessage();
-		ec.connect("localhost", 4088, msg1.generateMessage());
+//		ec.connect("localhost", 4088, msg1.generateMessage());
 //		ec.connect("localhost", 4088, msg2.generateMessage());
 		
-		/*
 		ExecutorService es = Executors.newFixedThreadPool(5);
-		for(int i=0;i<1;i++){
-			es.submit(new NozzleOrderRun());
+		for(int i=0;i<5;i++){
+//			es.submit(new NozzleOrderRun());//Nozzle Order
+			es.submit(new PosConnectRun());//POS Connection
+//			es.submit(new FPInfoRun());//FPInfo
 		}
-		*/
+		
+	}
+}
+
+class PosConnectRun implements Runnable{
+	EPSPosEmulator ec = new EPSPosEmulator();
+
+	@Override
+	public void run() {
+		PosConnectMessage msg = new PosConnectMessage();
+		try {
+			ec.connect("localhost", 4088, msg.generateMessage());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
 
@@ -67,6 +83,21 @@ class NozzleOrderRun implements Runnable{
 		NozzleOrderMessage msg2 = new NozzleOrderMessage();
 		try {
 			ec.connect("localhost", 4088, msg2.generateMessage());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+}
+
+class FPInfoRun implements Runnable{
+	EPSPosEmulator ec = new EPSPosEmulator();
+	@Override
+	public void run() {
+		FPInfoMessage msg = new FPInfoMessage();
+		try {
+			ec.connect("localhost", 4088, msg.generateMessage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
