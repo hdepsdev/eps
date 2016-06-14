@@ -7,7 +7,6 @@ import com.bhz.eps.msg.BizMessageType;
 import com.bhz.eps.pdu.TPDU;
 import com.bhz.eps.service.PosRegService;
 import com.bhz.eps.util.Converts;
-import com.bhz.eps.util.PosMessageEncryption;
 import com.bhz.eps.util.Utils;
 
 import io.netty.buffer.ByteBuf;
@@ -44,18 +43,9 @@ public class PosConnectionProcessor extends BizProcessor {
 		bizBuf.writeBytes(sysVer);//服务器软件版本号
 		byte[] sysTime = Converts.str2Bcd(Utils.getServerTime());
 		bizBuf.writeBytes(sysTime);//服务器时间
-		byte[] responseContent = bizBuf.array();
-		try{
-			bizBuf.writeBytes(PosMessageEncryption.getPOSMac(responseContent));
-		}catch(Exception ex){
-			
-		}
+		byte[] responseContent = new byte[bizBuf.readableBytes()];
+		bizBuf.readBytes(responseContent);
 		
-		byte[] tpduHeader = Utils.genTPDUHeader(bizBuf.readableBytes(), (byte)0x00);
-		ByteBuf responseBuf = Unpooled.buffer(tpduHeader.length + bizBuf.readableBytes());
-		responseBuf.writeBytes(tpduHeader);
-		responseBuf.writeBytes(bizBuf);
-		
-		channel.writeAndFlush(responseBuf.array());
+		channel.writeAndFlush(responseContent);
 	}
 }

@@ -10,8 +10,6 @@ import com.bhz.eps.msg.BizMessageType;
 import com.bhz.eps.pdu.TPDU;
 import com.bhz.eps.service.FPInfoService;
 import com.bhz.eps.util.Converts;
-import com.bhz.eps.util.PosMessageEncryption;
-import com.bhz.eps.util.Utils;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -54,23 +52,10 @@ public class FPInfoProcessor extends BizProcessor {
 		b.writeBytes(nozzleAmount);
 		b.writeBytes(nozzleCodes);
 		
-		byte[] dataArr = b.array();
-		byte[] dataMac = null;
-		try {
-			dataMac = PosMessageEncryption.getPOSMac(dataArr);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		} finally{
-			b.release();
-		}
-		
-		byte[] bizDataArr = Utils.concatTwoByteArray(dataArr, dataMac);
-		
-		byte[] tpduHeader = Utils.genTPDUHeader(bizDataArr.length,(byte)0x00);
-		byte[] responseMsg = Utils.concatTwoByteArray(tpduHeader, bizDataArr);
-		this.channel.writeAndFlush(responseMsg);
-		
+		byte[] dataArr = b.array();		
+		b.release();
+		//传递封装好的业务返回消息给Encoder
+		this.channel.writeAndFlush(dataArr);
 	}
 
 }
