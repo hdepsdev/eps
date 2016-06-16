@@ -20,5 +20,16 @@ public class NozzleOrderServiceImpl implements NozzleOrderService {
 	public NozzleOrder getOrder() {
 		return orderDao.getOrder();
 	}
-
+/*	@Override
+	public String getNozzleCode(){
+		return orderDao.getNozzleCode();
+	}
+	@Override
+	public int getNozzleNumber(){
+		return orderDao.getNozzleNumber();
+	}
+	@Override
+	public long getCountToPaid(String nozzlecode){
+		return orderDao.getCountToPaid(nozzlecode);
+	}*/
 }

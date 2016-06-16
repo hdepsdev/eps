@@ -446,6 +446,16 @@ public final class Converts {
         return bytes2Int(dest);
     }
     
+	public static byte[] int2bytes(int n)
+	{
+		byte[] result = new byte[4];
+		result[0] = (byte)((n >>>24) & 0xff);
+		result[1] = (byte)((n >>>16) & 0xff);
+		result[2] = (byte)((n >>>8) & 0xff);
+		result[3] = (byte)((n >>>0) & 0xff);
+		return result;
+	}
+    
     public static long U32ToLong(byte[] bytes) {
         byte[] dest = new byte[8];
         if(bytes.length < 8){

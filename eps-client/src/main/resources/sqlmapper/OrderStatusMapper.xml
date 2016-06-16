@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bhz.eps.dao.OrderStatusDao">
+	<select id="GetOrderSta" resultType="int">
+		SELECT ORDER_STATUS FROM NOZZLE_ORDER where NOZZLE_NUMBER=#{nozzleCode,jdbcType=VARCHAR} and WORK_ORDER=#{workCode,jdbcType=VARCHAR}  
+	</select>	
+</mapper>

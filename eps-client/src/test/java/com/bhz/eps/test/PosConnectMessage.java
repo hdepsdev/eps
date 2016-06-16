@@ -21,6 +21,5 @@ public class PosConnectMessage extends AbstractPosMessage{
 		bb.writeBytes(macByte);
 		ByteBuf r = bb.copy(0, bb.readableBytes());
 		return r.array();
-	}
-	
+	}	
 }

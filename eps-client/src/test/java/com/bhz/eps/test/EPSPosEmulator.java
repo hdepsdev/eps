@@ -50,10 +50,16 @@ public class EPSPosEmulator {
 //		ec.connect("localhost", 4088, msg2.generateMessage());
 		
 		ExecutorService es = Executors.newFixedThreadPool(5);
-		for(int i=0;i<5;i++){
-//			es.submit(new NozzleOrderRun());//Nozzle Order
-			es.submit(new PosConnectRun());//POS Connection
-//			es.submit(new FPInfoRun());//FPInfo
+		for(int i=0;i<1;i++){
+			//es.submit(new NozzleOrderRun());//Nozzle Order
+			//es.submit(new PosConnectRun());//POS Connection
+			//es.submit(new HeartBeatRun());//HeartBeat
+			//es.submit(new FPInfoRun());//FPInfo
+			//es.submit(new FpOrderlistRun());//FpOrderList
+			//es.submit(new LockOrderRun());//LockOrder
+			//es.submit(new OrderDetailRun());//GetDetailsOrder
+			es.submit(new PayCompleteRun());//PayComplete
+			//es.submit(new UnLockOrderRun());//UnLockOrder
 		}
 		
 	}
@@ -105,7 +111,93 @@ class FPInfoRun implements Runnable{
 	}
 	
 }
+class HeartBeatRun implements Runnable{
+	
+	EPSPosEmulator ec = new EPSPosEmulator();
 
+	@Override
+	public void run() {
+		HeartBeatMessage msg = new HeartBeatMessage();
+		try {
+			ec.connect("localhost", 4088, msg.generateMessage());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+}
+class LockOrderRun implements Runnable{
+	EPSPosEmulator ec = new EPSPosEmulator();
+
+	@Override
+	public void run() {
+		LockOrderMessage msg = new LockOrderMessage();
+		try {
+			ec.connect("localhost", 4088, msg.generateMessage());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+class FpOrderlistRun implements Runnable{
+	EPSPosEmulator ec = new EPSPosEmulator();
+
+	@Override
+	public void run() {
+		FpOrderlistMessage msg = new FpOrderlistMessage();
+		try {
+			ec.connect("localhost", 4088, msg.generateMessage());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+class OrderDetailRun implements Runnable{
+	EPSPosEmulator ec = new EPSPosEmulator();
+
+	@Override
+	public void run() {
+		OrderDetailMessage msg = new OrderDetailMessage();
+		try {
+			ec.connect("localhost", 4088, msg.generateMessage());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+class PayCompleteRun implements Runnable{
+	EPSPosEmulator ec = new EPSPosEmulator();
+
+	@Override
+	public void run() {
+		PayCompleteMessage msg = new PayCompleteMessage();
+		try {
+			ec.connect("localhost", 4088, msg.generateMessage());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+class UnLockOrderRun implements Runnable{
+	EPSPosEmulator ec = new EPSPosEmulator();
+
+	@Override
+	public void run() {
+		UnlockOrderMessage msg = new UnlockOrderMessage();
+		try {
+			ec.connect("localhost", 4088, msg.generateMessage());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
 class EPSClientHandler extends SimpleChannelInboundHandler<ByteBuf>{
 	
 	final byte[] msg;
