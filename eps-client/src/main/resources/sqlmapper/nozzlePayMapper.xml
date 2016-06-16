@@ -7,10 +7,18 @@
 				,#{oilType,jdbcType=INTEGER},#{oilCategory,jdbcType=INTEGER},#{price,jdbcType=INTEGER}
 				,#{volumeConsume,jdbcType=DECIMAL})
 	</insert>
-	<select id="getOrder" resultMap="nozzleOrder">
+	<select id="getOrder" resultMap="nozzleOrder" >
 		SELECT * FROM nozzle_order where work_order='order1'
 	</select>
-	
+<!--	<select id="getNozzleCode"  resultType="string">
+		SELECT GROUP_CONCAT(distinct nozzle_number) FROM nozzle_order where order_status='0'
+	</select>
+	<select id="getNozzleNumber" resultType="int">
+		SELECT COUNT(distinct nozzle_number) FROM nozzle_order where order_status='0'
+	</select>
+	<select id="getCountToPaid" resultType="int" parameterType="string">
+		SELECT COUNT work_order FROM nozzle_order where nozzle_number= #{nozzleNumber} and order_status='0'
+	</select>-->
 	<resultMap type="com.bhz.eps.entity.NozzleOrder" id="nozzleOrder">
 		<id property="workOrder" column="work_order"/>
 		<result property="nozzleNumber" column="NOZZLE_NUMBER"/>

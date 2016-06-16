@@ -5,4 +5,7 @@ import com.bhz.eps.entity.NozzleOrder;
 public interface NozzleOrderService {
 	public void addOrder(NozzleOrder order);
 	public NozzleOrder getOrder();
+//	public String getNozzleCode();
+//	public int getNozzleNumber();
+//	public long getCountToPaid(String nozzlecode);
 }
