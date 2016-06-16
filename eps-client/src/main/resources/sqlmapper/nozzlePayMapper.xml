@@ -10,7 +10,7 @@
 	<select id="getOrder" resultMap="nozzleOrder">
 		SELECT * FROM nozzle_order where work_order='order1'
 	</select>	
-	<select id="getOrderByNozzleNumberAndWorkOrder" resultMap="NozzleOrder" parameterType="string">
+	<select id="getOrderByNozzleNumberAndWorkOrder" resultMap="nozzleOrder" parameterType="string">
 		SELECT * FROM nozzle_order where nozzle_number=#{nozzleNumber} and work_order=#{workOrder}
 	</select>	
 	<update id="updateOrder">
