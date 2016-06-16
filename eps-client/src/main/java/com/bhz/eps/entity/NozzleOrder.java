@@ -21,4 +21,8 @@ public class NozzleOrder implements java.io.Serializable{
 	private int price;
 	@Getter @Setter
 	private BigDecimal volumeConsume;
+	
+	public static final int ORDER_NOT_PAYED = 0;
+	public static final int ORDER_LOCKED = 1;
+	public static final int ORDER_PAYED = 2;
 }

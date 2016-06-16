@@ -9,7 +9,13 @@
 	</insert>
 	<select id="getOrder" resultMap="nozzleOrder">
 		SELECT * FROM nozzle_order where work_order='order1'
-	</select>
+	</select>	
+	<select id="getOrderByNozzleNumberAndWorkOrder" resultMap="NozzleOrder" parameterType="string">
+		SELECT * FROM nozzle_order where nozzle_number=#{nozzleNumber} and work_order=#{workOrder}
+	</select>	
+	<update id="updateOrder">
+		UPDATE nozzle_order SET order_status=#{status} WHERE nozzle_number=#{nozzleNumber} and work_order=#{workOrder}
+	</update>
 	
 	<resultMap type="com.bhz.eps.entity.NozzleOrder" id="nozzleOrder">
 		<id property="workOrder" column="work_order"/>

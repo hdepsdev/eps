@@ -20,5 +20,12 @@ public class NozzleOrderServiceImpl implements NozzleOrderService {
 	public NozzleOrder getOrder() {
 		return orderDao.getOrder();
 	}
-
+	@Override
+	public NozzleOrder getOrderByNozzleNumberAndWorkOrder(String nozzleNumber, String workOrder) {
+		return orderDao.getOrderByNozzleNumberAndWorkOrder(nozzleNumber, workOrder);
+	}
+	@Override
+	public void updateOrderStatus(int status, String nozzleNumber, String workOrder) {
+		orderDao.updateOrderStatus(status, nozzleNumber, workOrder);
+	}
 }
