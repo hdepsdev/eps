@@ -13,7 +13,7 @@
 	<select id="getOrderByNozzleNumberAndWorkOrder" resultMap="nozzleOrder" parameterType="string">
 		SELECT * FROM nozzle_order where nozzle_number=#{nozzleNumber} and work_order=#{workOrder}
 	</select>	
-	<update id="updateOrder">
+	<update id="updateOrderStatus">
 		UPDATE nozzle_order SET order_status=#{status} WHERE nozzle_number=#{nozzleNumber} and work_order=#{workOrder}
 	</update>
 	

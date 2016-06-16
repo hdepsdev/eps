@@ -8,7 +8,7 @@ import com.bhz.eps.util.Converts;
 public class OrderDetailMessage extends AbstractPosMessage{
 	@Override
 	public byte[] generateMessage() {
-		int nozzlecode = Integer.parseInt("80087938");
+		int nozzlecode = Integer.parseInt("00000127");
 		
 		ByteBuf bb = Unpooled.buffer();
 		byte[] macByte = new byte[4];
@@ -16,7 +16,7 @@ public class OrderDetailMessage extends AbstractPosMessage{
 		bb.writeBytes(genTPDUHeader(8 + size + 4));
 		bb.writeBytes(genBizHeader(6));
 		bb.writeInt(nozzlecode);
-		bb.writeBytes(Converts.str2Bcd("2016060716553355896150"));
+		bb.writeBytes(Converts.str2Bcd("2016061310275267817379"));
 		bb.writeBytes(macByte);
 		ByteBuf r = bb.copy(0, bb.readableBytes());
 		return r.array();

@@ -31,9 +31,17 @@ public class UnlockOrderProcessor extends BizProcessor{
 		try{
 			NozzleOrderService nos = Boot.appctx.getBean(
 					"nozzleOrderService",NozzleOrderService.class);
-			nos.updateOrderStatus(NozzleOrder.ORDER_NOT_PAYED, 
-					Converts.bcd2Str(nozzleCodeArr), Converts.bcd2Str(orderArr));
-			re = 0x01;
+			
+			NozzleOrder no = nos.getOrderByNozzleNumberAndWorkOrder
+					(Integer.toString(Converts.bytes2Int(nozzleCodeArr)), 
+							Converts.bcd2Str(orderArr));
+			
+			if (no != null) {
+				nos.updateOrderStatus(NozzleOrder.ORDER_NOT_PAYED, 
+						Integer.toString(Converts.bytes2Int(nozzleCodeArr))
+						, Converts.bcd2Str(orderArr));
+				re = 0x01;
+			}
 		}
 		catch(Exception e){
 			

@@ -39,17 +39,22 @@ public class GetTransDetailProcessor extends BizProcessor{
 		NozzleOrderService nos = Boot.appctx.getBean(
 				"nozzleOrderService",NozzleOrderService.class);
 		NozzleOrder no = nos.getOrderByNozzleNumberAndWorkOrder
-				(Converts.bcd2Str(nozzleCodeArr), Converts.bcd2Str(orderArr));
+				(Integer.toString(Converts.bytes2Int(nozzleCodeArr)), 
+						Converts.bcd2Str(orderArr));
+		
+		if (no == null)
+			return;
 		
 		//创建返回消息
 		byte[] bizHeaderArr = tpdu.getBody().getHeader().getOriginalContent();
-		byte[] price = Converts.addZeroInLeftSide(Converts.intToByte(no.getPrice()), 5);
-		byte[] count = Converts.addZeroInLeftSide(Converts.intToByte(
+		byte[] price = Converts.addZeroInLeftSide(Converts.str2Bcd(
+				Integer.toString(no.getPrice())), 5);
+		byte[] count = Converts.addZeroInLeftSide(Converts.str2Bcd(Integer.toString(
 				((new BigDecimal(no.getPrice())).multiply(no.getVolumeConsume()))
-				.divide(new BigDecimal(1), 0, BigDecimal.ROUND_HALF_UP).intValue()), 8);
-		byte[] amount = Converts.addZeroInLeftSide(Converts.intToByte(
+				.divide(new BigDecimal(1), 0, BigDecimal.ROUND_HALF_UP).intValue())), 8);
+		byte[] amount = Converts.addZeroInLeftSide(Converts.str2Bcd(Integer.toString(
 				no.getVolumeConsume().divide(
-						new BigDecimal(1), 0, BigDecimal.ROUND_HALF_UP).intValue()), 6);
+						new BigDecimal(1), 0, BigDecimal.ROUND_HALF_UP).intValue())), 6);
 		
 		ByteBuf b = Unpooled.buffer(bizHeaderArr.length + orderArr.length + 
 				1 + 1 + price.length + count.length + amount.length);
