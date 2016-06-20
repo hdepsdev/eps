@@ -6,7 +6,7 @@ import io.netty.buffer.Unpooled;
 public class FpOrderlistMessage extends AbstractPosMessage{
 	@Override
 	public byte[] generateMessage() {
-		int nozzlecode = Integer.parseInt("80087938");
+		int nozzlecode = Integer.parseInt("80087937");
 		ByteBuf bb = Unpooled.buffer();
 		byte[] macByte = new byte[4];
 		long size = 4;

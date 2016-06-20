@@ -25,7 +25,6 @@ public class PosRegServiceImpl implements PosRegService {
 			posDao.updatePos(pos);
 		}
 	}
-
 	@Override
 	public List<PosRegInfo> allRegPos() {
 		// TODO Auto-generated method stub

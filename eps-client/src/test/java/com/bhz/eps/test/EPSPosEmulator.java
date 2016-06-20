@@ -46,8 +46,8 @@ public class EPSPosEmulator {
 //		EPSPosEmulator ec = new EPSPosEmulator();
 //		PosConnectMessage msg1 = new PosConnectMessage();
 //		NozzleOrderMessage msg2 = new NozzleOrderMessage();
-//		ec.connect("localhost", 4088, msg1.generateMessage());
-//		ec.connect("localhost", 4088, msg2.generateMessage());
+//		ec.connect("10.1.1.145", 9000, msg1.generateMessage());
+//		ec.connect("10.1.1.145", 9000, msg2.generateMessage());
 		
 		ExecutorService es = Executors.newFixedThreadPool(5);
 		for(int i=0;i<1;i++){
@@ -72,7 +72,7 @@ class PosConnectRun implements Runnable{
 	public void run() {
 		PosConnectMessage msg = new PosConnectMessage();
 		try {
-			ec.connect("localhost", 4088, msg.generateMessage());
+			ec.connect("10.1.1.145", 9000, msg.generateMessage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -88,7 +88,7 @@ class NozzleOrderRun implements Runnable{
 	public void run() {
 		NozzleOrderMessage msg2 = new NozzleOrderMessage();
 		try {
-			ec.connect("localhost", 4088, msg2.generateMessage());
+			ec.connect("10.1.1.145", 9000, msg2.generateMessage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -103,7 +103,7 @@ class FPInfoRun implements Runnable{
 	public void run() {
 		FPInfoMessage msg = new FPInfoMessage();
 		try {
-			ec.connect("localhost", 4088, msg.generateMessage());
+			ec.connect("10.1.1.145", 9000, msg.generateMessage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -119,7 +119,7 @@ class HeartBeatRun implements Runnable{
 	public void run() {
 		HeartBeatMessage msg = new HeartBeatMessage();
 		try {
-			ec.connect("localhost", 4088, msg.generateMessage());
+			ec.connect("10.1.1.145", 9000, msg.generateMessage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -134,7 +134,7 @@ class LockOrderRun implements Runnable{
 	public void run() {
 		LockOrderMessage msg = new LockOrderMessage();
 		try {
-			ec.connect("localhost", 4088, msg.generateMessage());
+			ec.connect("localhost", 9000, msg.generateMessage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -149,7 +149,7 @@ class FpOrderlistRun implements Runnable{
 	public void run() {
 		FpOrderlistMessage msg = new FpOrderlistMessage();
 		try {
-			ec.connect("localhost", 4088, msg.generateMessage());
+			ec.connect("localhost", 9000, msg.generateMessage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -163,7 +163,7 @@ class OrderDetailRun implements Runnable{
 	public void run() {
 		OrderDetailMessage msg = new OrderDetailMessage();
 		try {
-			ec.connect("localhost", 4088, msg.generateMessage());
+			ec.connect("localhost", 9000, msg.generateMessage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -177,7 +177,7 @@ class PayCompleteRun implements Runnable{
 	public void run() {
 		PayCompleteMessage msg = new PayCompleteMessage();
 		try {
-			ec.connect("localhost", 4088, msg.generateMessage());
+			ec.connect("10.1.1.145", 9000, msg.generateMessage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -191,7 +191,7 @@ class UnLockOrderRun implements Runnable{
 	public void run() {
 		UnlockOrderMessage msg = new UnlockOrderMessage();
 		try {
-			ec.connect("localhost", 4088, msg.generateMessage());
+			ec.connect("localhost", 9000, msg.generateMessage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

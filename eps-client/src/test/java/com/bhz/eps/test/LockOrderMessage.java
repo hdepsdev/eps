@@ -9,7 +9,7 @@ import com.bhz.eps.util.Utils;
 public class LockOrderMessage extends AbstractPosMessage{
 	@Override
 	public byte[] generateMessage() {
-		int nozzlecode = Integer.parseInt("80087938");
+		int nozzlecode = Integer.parseInt("127");
 		
 		ByteBuf bb = Unpooled.buffer();
 		byte[] macByte = new byte[4];
@@ -17,7 +17,7 @@ public class LockOrderMessage extends AbstractPosMessage{
 		bb.writeBytes(genTPDUHeader(8 + size + 4));
 		bb.writeBytes(genBizHeader(5));
 		bb.writeInt(nozzlecode);
-		bb.writeBytes(Converts.str2Bcd("2016060716553355896150"));
+		bb.writeBytes(Converts.str2Bcd("2016061310280203370458"));
 		bb.writeBytes(macByte);
 		ByteBuf r = bb.copy(0, bb.readableBytes());
 		return r.array();

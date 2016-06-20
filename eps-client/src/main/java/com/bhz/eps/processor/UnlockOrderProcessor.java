@@ -27,7 +27,7 @@ public class UnlockOrderProcessor extends BizProcessor{
 		System.arraycopy(cnt, idx, orderArr, 0, orderArr.length);
 		idx += orderArr.length;
 		
-		byte re = 0x00;
+		byte re = 0x01;
 		try{
 			NozzleOrderService nos = Boot.appctx.getBean(
 					"nozzleOrderService",NozzleOrderService.class);
@@ -40,7 +40,7 @@ public class UnlockOrderProcessor extends BizProcessor{
 				nos.updateOrderStatus(NozzleOrder.ORDER_NOT_PAYED, 
 						Integer.toString(Converts.bytes2Int(nozzleCodeArr))
 						, Converts.bcd2Str(orderArr));
-				re = 0x01;
+				re = 0x00;
 			}
 		}
 		catch(Exception e){

@@ -20,5 +20,5 @@ public class FPInfoServiceImpl implements FPInfoService {
 	public List<FPInfo> getAllNozzle() {
 		return fpDao.showFPInfo();
 	}
-
+	
 }
