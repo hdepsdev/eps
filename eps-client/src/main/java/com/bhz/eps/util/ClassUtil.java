@@ -15,6 +15,9 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.bhz.eps.annotation.BizProcessorSpec;
 
 
@@ -26,7 +29,7 @@ import com.bhz.eps.annotation.BizProcessorSpec;
  */
 
 public class ClassUtil {
-	
+	private static final Logger logger = LogManager.getLogger(ClassUtil.class);
 	// msgType->请求、响应类的class对象
 	private static Map<Short, Class<?>> typeToMsgClassMap;
 	
@@ -80,7 +83,7 @@ public class ClassUtil {
 	 * @throws IOException
 	 */
 	public static void initTypeToProcessorClassMap() throws ClassNotFoundException, IOException {
-		
+		logger.trace("Initialize BizProcessors...");
 		Map<Short, Class<?>> tmpMap = new HashMap<Short, Class<?>>();
 		
 		Set<Class<?>> classSet = getClasses("com.bhz.eps.processor");
@@ -94,6 +97,7 @@ public class ClassUtil {
 		}
 		
 		typeToProcessorClassMap = Collections.unmodifiableMap(tmpMap);
+		logger.trace("All BizProcessors are initialized.");
 	}
 	
 	/**
@@ -123,19 +127,20 @@ public class ClassUtil {
 			String protocol = url.getProtocol();
 			// 如果是以文件的形式保存在文件系统上
 			if ("file".equals(protocol)) {
-				System.err.println("file类型的扫描");
 				// 获取包的物理路径
 				String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
+				logger.debug("Scanning biz processors in \"File Path: \"" + filePath);
 				// 以文件的方式扫描整个包下的文件，并添加到集合中
 				findAndAddClassesInPackageByFile(packageName, filePath,recursive, classes);
 			} else if ("jar".equals(protocol)) {
 				// 如果是jar包文件
 				// 定义一个JarFile
-				System.err.println("jar类型的扫描");
+				logger.debug("file类型的扫描");
 				JarFile jar;
 				// 获取jar
 				JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
 				jar = jarURLConnection.getJarFile();
+				logger.debug("Scanning biz processors in \"JAR File: \"" + jar.getName());
 				// 从此jar包，得到一个枚举类
 				Enumeration<JarEntry> entries = jar.entries();
 				// 同样的进行循环迭代

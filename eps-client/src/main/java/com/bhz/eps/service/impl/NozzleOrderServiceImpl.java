@@ -1,5 +1,9 @@
 package com.bhz.eps.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -17,8 +21,8 @@ public class NozzleOrderServiceImpl implements NozzleOrderService {
 		orderDao.addOrder(order);
 	}
 	@Override
-	public NozzleOrder getOrder() {
-		return orderDao.getOrder();
+	public NozzleOrder getOrderByWorkorder(String workOrder) {
+		return orderDao.getOrderByWorkorder(workOrder);
 	}
 	@Override
 	public NozzleOrder getOrderByNozzleNumberAndWorkOrder(String nozzleNumber, String workOrder) {
@@ -27,5 +31,17 @@ public class NozzleOrderServiceImpl implements NozzleOrderService {
 	@Override
 	public void updateOrderStatus(int status, String nozzleNumber, String workOrder) {
 		orderDao.updateOrderStatus(status, nozzleNumber, workOrder);
+	}
+	@Override
+	public List<NozzleOrder> queryUnUploadOrders() {
+		return orderDao.queryUnUploadOrders();
+	}
+	@Override
+	public void updateUploadStatus(String workOrder, int uploadStatus, String uploadTime) {
+		Map<String,Object> paramMap = new HashMap<String,Object>();
+		paramMap.put("workOrder", workOrder);
+		paramMap.put("uploadStatus", uploadStatus);
+		paramMap.put("uploadTime", uploadTime);
+		orderDao.updateUploadStatus(paramMap);
 	}
 }

@@ -1,5 +1,11 @@
 package com.bhz.eps;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -26,6 +32,8 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  *
  */
 public class Boot {
+	
+	private static final Logger logger = LogManager.getLogger(Boot.class);
 	public final static ApplicationContext appctx = new ClassPathXmlApplicationContext(new String[]{"conf/application-context.xml"});
 	
 	public void start() throws Exception {
@@ -56,7 +64,7 @@ public class Boot {
 
 				@Override
 				public void operationComplete(ChannelFuture future) throws Exception {
-					System.out.println("Server is started and listening on port 9000");
+					logger.info("Server is started and listening on port 9000");
 				}
 				
 			});
@@ -69,7 +77,32 @@ public class Boot {
 	
 	public static void main(String[] args) throws Exception{
 		ClassUtil.initTypeToProcessorClassMap();
+		startEPSManager();
 		Boot b = new Boot();
 		b.start();
 	}
+	
+	private static void startEPSManager(){
+		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+		ses.scheduleAtFixedRate(new RunEPSManager(), 0, 30, TimeUnit.SECONDS);
+	}
+}
+
+class RunEPSManager implements Runnable{
+	private static final Logger logger = LogManager.getLogger(RunEPSManager.class);
+	@Override
+	public void run() {
+		EPSClientDataManager ecdm = EPSClientDataManager.getInstance("localhost", 3456);
+		try {
+			ecdm.submitTransData();
+		} catch (Exception e) {
+			if(e instanceof java.net.ConnectException){
+				logger.error(e.getMessage());
+//				System.out.println(e.getMessage());
+			}else{
+				e.printStackTrace();
+			}
+		}
+	}
+	
 }
