@@ -1,6 +1,8 @@
 package com.bhz.eps.util;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Properties;
 import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
@@ -10,13 +12,24 @@ public class Utils {
 	
 	private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 	
+	public final static Properties systemConfiguration = new Properties();
+	
+	static{
+		try {
+			systemConfiguration.load(Utils.class.getClassLoader().getResourceAsStream("conf/sys.conf"));
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	// UUID Dictionary (Alpha + Number)
-	public static String[] chars = new String[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n",
+	private final static String[] chars = new String[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n",
 			"o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8",
 			"9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
 			"U", "V", "W", "X", "Y", "Z" };
 	// UUID Dictionary (Only Number)
-	public static String[] uuidNumbers = new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+	private final static String[] uuidNumbers = new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
 	public static String generate8BitNumberUUID() {
 		StringBuffer shortBuffer = new StringBuffer();

@@ -32,5 +32,8 @@
 		<result property="oilCategory" column="OIL_CATEGORY"/>
 		<result property="price" column="PRICE"/>
 		<result property="volumeConsume" column="VOLUME_CONSUME"/>
+		<result property="stationCode" column="STATION_CODE"/>
+		<result property="uploadStatus" column="UPLOAD_STATUS"/>
+		<result property="uploadDateTime" column="UPLOAD_TIME"/>
 	</resultMap>
 </mapper>

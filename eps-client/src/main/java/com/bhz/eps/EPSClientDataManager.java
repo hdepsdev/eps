@@ -11,6 +11,7 @@ import com.bhz.eps.msg.PaymentReqProto;
 import com.bhz.eps.msg.PaymentRespProto;
 import com.bhz.eps.msg.PaymentRespProto.PaymentResp;
 import com.bhz.eps.service.NozzleOrderService;
+import com.bhz.eps.util.Utils;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -18,6 +19,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPromise;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -53,7 +55,7 @@ public class EPSClientDataManager {
 		EventLoopGroup worker = new NioEventLoopGroup();
 		try{
 			boot.group(worker).option(ChannelOption.TCP_NODELAY, true)
-				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, Integer.parseInt(Utils.systemConfiguration.getProperty("eps.client.data.upload.timeout")))
 				.channel(NioSocketChannel.class)
 				.handler(new ChannelInitializer<SocketChannel>(){	
 					@Override

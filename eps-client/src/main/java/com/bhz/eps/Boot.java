@@ -13,6 +13,7 @@ import com.bhz.eps.codec.TPDUChecker;
 import com.bhz.eps.codec.TPDUDecoder;
 import com.bhz.eps.codec.TPDUEncoder;
 import com.bhz.eps.util.ClassUtil;
+import com.bhz.eps.util.Utils;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -59,12 +60,12 @@ public class Boot {
 				
 			});
 			
-			ChannelFuture cf = sb.bind(9000).sync();
+			ChannelFuture cf = sb.bind(Integer.parseInt(Utils.systemConfiguration.getProperty("eps.client.port"))).sync();
 			cf.addListener(new ChannelFutureListener(){
 
 				@Override
 				public void operationComplete(ChannelFuture future) throws Exception {
-					logger.info("Server is started and listening on port 9000");
+					logger.info("Server is started and listening on port " + Utils.systemConfiguration.getProperty("eps.client.port"));
 				}
 				
 			});
@@ -77,14 +78,18 @@ public class Boot {
 	
 	public static void main(String[] args) throws Exception{
 		ClassUtil.initTypeToProcessorClassMap();
-		startEPSManager();
+		if(Utils.systemConfiguration.getProperty("eps.client.data.upload.need").equalsIgnoreCase("true")){
+			startEPSManager();
+		}
 		Boot b = new Boot();
 		b.start();
 	}
 	
 	private static void startEPSManager(){
 		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-		ses.scheduleAtFixedRate(new RunEPSManager(), 0, 30, TimeUnit.SECONDS);
+		ses.scheduleAtFixedRate(new RunEPSManager(), 0, 
+				Integer.parseInt(Utils.systemConfiguration.getProperty("eps.client.data.upload.interval")), 
+				TimeUnit.SECONDS);
 	}
 }
 
@@ -92,7 +97,8 @@ class RunEPSManager implements Runnable{
 	private static final Logger logger = LogManager.getLogger(RunEPSManager.class);
 	@Override
 	public void run() {
-		EPSClientDataManager ecdm = EPSClientDataManager.getInstance("localhost", 3456);
+		EPSClientDataManager ecdm = EPSClientDataManager.getInstance(Utils.systemConfiguration.getProperty("eps.server.ip"), 
+				Integer.parseInt(Utils.systemConfiguration.getProperty("eps.server.port")));
 		try {
 			ecdm.submitTransData();
 		} catch (Exception e) {
