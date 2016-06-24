@@ -87,8 +87,16 @@ class EPSClientHandler extends SimpleChannelInboundHandler<PaymentRespProto.Paym
 	private static final Logger logger = LogManager.getLogger(EPSClientHandler.class);
 	@Override
 	protected void messageReceived(ChannelHandlerContext ctx, PaymentResp msg) throws Exception {
-		System.out.println(msg.getResult().getResultCode());
+		if(msg.getResult().getResultCode().equals("1")){
+			NozzleOrderService nos = Boot.appctx.getBean("nozzleOrderService",NozzleOrderService.class);
+			nos.updateUploadStatus(msg.getWorkOrder(), NozzleOrder.UPLOADED, Utils.getServerTime());
+			logger.debug("Processed work order [ " + msg.getWorkOrder() + " ] ");
+		}else{
+			logger.error(msg.getResult().getErrorCause());
+		}
 	}
+	
+	
 	
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
