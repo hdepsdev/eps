@@ -129,18 +129,17 @@ public class ClassUtil {
 			if ("file".equals(protocol)) {
 				// 获取包的物理路径
 				String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
-				logger.debug("Scanning biz processors in \"File Path: \"" + filePath);
+				logger.debug("Scanning biz processors in File Path: \"" + filePath + "\"");
 				// 以文件的方式扫描整个包下的文件，并添加到集合中
 				findAndAddClassesInPackageByFile(packageName, filePath,recursive, classes);
 			} else if ("jar".equals(protocol)) {
 				// 如果是jar包文件
 				// 定义一个JarFile
-				logger.debug("file类型的扫描");
 				JarFile jar;
 				// 获取jar
 				JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
 				jar = jarURLConnection.getJarFile();
-				logger.debug("Scanning biz processors in \"JAR File: \"" + jar.getName());
+				logger.debug("Scanning biz processors in \"JAR File: " + jar.getName() + "\"");
 				// 从此jar包，得到一个枚举类
 				Enumeration<JarEntry> entries = jar.entries();
 				// 同样的进行循环迭代

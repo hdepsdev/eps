@@ -18,7 +18,7 @@
 		UPDATE nozzle_order SET order_status=#{status} WHERE nozzle_number=#{nozzleNumber} and work_order=#{workOrder}
 	</update>
 	<select id="queryUnUploadOrders" resultMap="nozzleOrder">
-		SELECT * FROM nozzle_order t where t.upload_status=1
+		SELECT * FROM nozzle_order t where t.upload_status=1 and t.order_status=2
 	</select>
 	<update id="updateUploadStatus" parameterType="Map">
 		UPDATE nozzle_order SET upload_status=#{uploadStatus},upload_time=#{uploadTime} WHERE work_order=#{workOrder}

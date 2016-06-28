@@ -24,12 +24,12 @@ public class NozzleOrderServiceTest {
 	public void addOrderTest(){
 		NozzleOrderService nos = ctx.getBean("nozzleOrderService",NozzleOrderService.class);
 		NozzleOrder no = new NozzleOrder();
-		no.setWorkOrder("order2");
-		no.setNozzleNumber("e-14");
+		no.setWorkOrder("order3");
+		no.setNozzleNumber("1");
 		no.setOilType(1);
 		no.setOilCategory(10);
 		no.setPrice(569);
-		no.setVolumeConsume(new BigDecimal(34.50));
+		no.setVolumeConsume(new BigDecimal(25.60));
 		no.setStationCode("1000020000");
 		no.setUploadStatus(NozzleOrder.UN_UPLOAD);
 		nos.addOrder(no);

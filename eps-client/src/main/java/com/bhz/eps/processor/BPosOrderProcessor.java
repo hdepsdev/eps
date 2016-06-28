@@ -20,6 +20,7 @@ public class BPosOrderProcessor extends BizProcessor{
 	@Override
 	public void process() {
 		TPDU tpdu = (TPDU)this.msgObject;
+		String stationCode = tpdu.getBody().getHeader().getStationID();
 		byte[] cnt = tpdu.getBody().getData().getContent();
 		byte[] nozzleCodeArr = new byte[4];//油枪编号：U32
 		byte[] orderArr = new byte[11];//支付流水号：BCD 11
@@ -51,7 +52,9 @@ public class BPosOrderProcessor extends BizProcessor{
 		no.setPrice(Integer.parseInt(Converts.bcd2Str(priceArr)));
 		BigDecimal volume = new BigDecimal(Converts.bcd2Str(volumeArr));
 		no.setVolumeConsume(volume.divide(new BigDecimal(100)));
-		no.setOrderStatus(1);
+		no.setOrderStatus(NozzleOrder.ORDER_NOT_PAYED);
+		no.setStationCode(stationCode);
+		no.setUploadStatus(NozzleOrder.UN_UPLOAD);
 		
 		NozzleOrderService nos = Boot.appctx.getBean("nozzleOrderService",NozzleOrderService.class);
 		nos.addOrder(no);

@@ -75,6 +75,7 @@ public class EPSClientDataManager {
 				public void operationComplete(ChannelFuture future) throws Exception {
 					logger.debug("Established connection to " + hostIP + " on port " + hostPort);
 				}
+				
 			});
 			cf.channel().closeFuture().sync();
 		}finally{
@@ -104,7 +105,7 @@ class EPSClientHandler extends SimpleChannelInboundHandler<PaymentRespProto.Paym
 		List<NozzleOrder> orderList = nos.queryUnUploadOrders();
 		if(orderList == null || orderList.size()==0){
 			logger.debug("No un_upload nozzle order found.");
-			return;
+			ctx.close();
 		}else{
 			for(NozzleOrder order:orderList){
 				PaymentReqProto.PaymentReq.Builder builder = PaymentReqProto.PaymentReq.newBuilder();
