@@ -25,7 +25,7 @@ public class TPDUEncoder extends MessageToByteEncoder<Object> {
 		}
 		byte[] bizDataArr = Utils.concatTwoByteArray(dataArr, dataMac);
 		
-		byte[] tpduHeader = Utils.genTPDUHeader(bizDataArr.length,(byte)0x00);
+		byte[] tpduHeader = Utils.genTPDUHeader(bizDataArr.length);
 		byte[] responseMsg = Utils.concatTwoByteArray(tpduHeader, bizDataArr);
 		
     	out.writeBytes(responseMsg);

@@ -45,7 +45,7 @@ public class FpOrderlistProcessor extends BizProcessor{
 			BigDecimal payment =  price.multiply(volume);
 			byte[] nozzlecode = Converts.str2Bcd(order.getWorkOrder());
 			b.writeBytes(nozzlecode);//支付流水号
-			byte[] totalCount = Converts.long2U32(Converts.transformMoneyFromRealToPosNeed(payment));
+			byte[] totalCount = Converts.long2U32(payment.longValue());
 			b.writeBytes(totalCount);//支付金额	
 		}
 		

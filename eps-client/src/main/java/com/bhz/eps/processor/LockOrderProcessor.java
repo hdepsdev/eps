@@ -3,21 +3,17 @@ package com.bhz.eps.processor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.bhz.eps.Boot;
 import com.bhz.eps.annotation.BizProcessorSpec;
 import com.bhz.eps.entity.NozzleOrder;
 import com.bhz.eps.msg.BizMessageType;
 import com.bhz.eps.pdu.TPDU;
-import com.bhz.eps.service.GetOrderlistService;
 import com.bhz.eps.service.NozzleOrderService;
 import com.bhz.eps.util.Converts;
 
 
 /**
- * 获取油枪待支付列表
+ * 锁定待支付订单
  * @author txy
  *
  */
@@ -42,7 +38,7 @@ public class LockOrderProcessor extends BizProcessor{
 							Converts.bcd2Str(payInfoNum));
 			
 			if (no != null) {
-				if(no.getOrderStatus() == 1)
+				if(no.getOrderStatus() == NozzleOrder.ORDER_LOCKED)
 				{
 					re = 0x01;
 				}					

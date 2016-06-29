@@ -61,14 +61,18 @@ public class Utils {
 		return sdf.format(System.currentTimeMillis());
 	}
 	
-	public static byte[] genTPDUHeader(long tpduLength,byte crc8Value){
-		ByteBuf bb = Unpooled.buffer(10);
+	public static byte[] genTPDUHeader(long tpduLength){
+		ByteBuf bb = Unpooled.buffer(9);
 		bb.writeByte(0x10).writeByte(0x10);
 		bb.writeInt((int)tpduLength);
 		bb.writeByte(0x01);
 		bb.writeShort(0x0000);
-		bb.writeByte(0);
-		return bb.array();
+		byte[] data = bb.array();
+		byte crcValue = CRC8.calc(data);
+		byte[] ret = new byte[10];
+		System.arraycopy(data, 0, ret, 0, data.length);
+		ret[9] = crcValue;
+		return ret;
 	}
 	
 	public static byte[] concatTwoByteArray(byte[] b1,byte[] b2){
