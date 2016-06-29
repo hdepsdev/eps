@@ -45,15 +45,25 @@ public class HeartBeatProcessor extends BizProcessor {
 		byte[] sysVer = new byte[1];
 		sysVer[0] = Utils.getSysVersion();//服务器软件版本号
 		byte[] sysTime = Converts.str2Bcd(Utils.getServerTime());//服务器时间
+		byte[] nozzleCodes;
 		StringBuffer sb = new StringBuffer();
-		for(FPInfo info:nozzles){
+		if(nozzles.size() != 0)
+		{
+			for(FPInfo info:nozzles){
 			sb.append(info.getNozzleNumber()).append(",");
 		}
-		sb.deleteCharAt(sb.length()-1);
-		byte[] nozzleCodes = new byte[sb.length()];//油枪编号
+		
+			sb.deleteCharAt(sb.length()-1);
+			nozzleCodes = new byte[sb.length()];//油枪编号
+		}
+		else
+		{
+			nozzleCodes = new byte[0];
+		}
 		for(int i=0;i<nozzleCodes.length;i++){
 			nozzleCodes[i] = (byte) sb.charAt(i);
 		}
+		
 		ByteBuf b = Unpooled.buffer(bizHeaderArr.length + sysVer.length + sysTime.length + nozzleCodes.length);
 		b.writeBytes(bizHeaderArr);
 		b.writeBytes(sysVer);
@@ -64,5 +74,6 @@ public class HeartBeatProcessor extends BizProcessor {
 		b.release();
 
 		this.channel.writeAndFlush(dataArr);
+
 	}
 }

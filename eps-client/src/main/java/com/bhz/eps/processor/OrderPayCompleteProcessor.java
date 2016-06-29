@@ -1,5 +1,8 @@
 package com.bhz.eps.processor;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 import com.bhz.eps.Boot;
 import com.bhz.eps.annotation.BizProcessorSpec;
 import com.bhz.eps.entity.NozzleOrder;
@@ -24,8 +27,29 @@ public class OrderPayCompleteProcessor extends BizProcessor{
 		System.arraycopy(cnt, idx, orderArr, 0, orderArr.length);
 		idx += orderArr.length;
 		
-		NozzleOrderService nos = Boot.appctx.getBean("nozzleOrderService",NozzleOrderService.class);
-		nos.updateOrderStatus(NozzleOrder.ORDER_PAYED,Integer.toString(Converts.bytes2Int(nozzleCodeArr)), Converts.bcd2Str(orderArr));
+		byte re = 0x01;
+		try{
+			NozzleOrderService nos = Boot.appctx.getBean(
+					"nozzleOrderService",NozzleOrderService.class);
+			nos.updateOrderStatus(NozzleOrder.ORDER_PAYED, 
+					Integer.toString(Converts.bytes2Int(nozzleCodeArr)), Converts.bcd2Str(orderArr));
+			re = 0x00; 
+		}
+		catch(Exception e){
+
+		}
+		
+		//创建返回消息
+				byte[] bizHeaderArr = tpdu.getBody().getHeader().getOriginalContent();
+				ByteBuf b = Unpooled.buffer(bizHeaderArr.length + 1);
+				
+				b.writeBytes(bizHeaderArr);
+				b.writeByte(re);
+				
+				byte[] dataArr = b.array();
+				b.release();
+				
+				this.channel.writeAndFlush(dataArr);
 	}
 
 }
