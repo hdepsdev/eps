@@ -1,6 +1,7 @@
 package com.bhz.eps.processor;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -53,8 +54,7 @@ public class GetTransDetailProcessor extends BizProcessor{
 				((new BigDecimal(no.getPrice())).multiply(no.getVolumeConsume()))
 				.divide(new BigDecimal(1), 0, BigDecimal.ROUND_HALF_UP).intValue())), 8);
 		byte[] amount = Converts.addZeroInLeftSide(Converts.str2Bcd(Integer.toString(
-				no.getVolumeConsume().divide(
-						new BigDecimal(1), 0, BigDecimal.ROUND_HALF_UP).intValue())), 6);
+				no.getVolumeConsume().multiply(new BigDecimal(100),new MathContext(BigDecimal.ROUND_HALF_UP)).intValue())), 6);
 		
 		ByteBuf b = Unpooled.buffer(bizHeaderArr.length + orderArr.length + 
 				1 + 1 + price.length + count.length + amount.length);

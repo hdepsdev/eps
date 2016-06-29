@@ -24,10 +24,8 @@ public class OrderPayCompleteProcessor extends BizProcessor{
 		System.arraycopy(cnt, idx, orderArr, 0, orderArr.length);
 		idx += orderArr.length;
 		
-		NozzleOrderService nos = Boot.appctx.getBean(
-				"nozzleOrderService",NozzleOrderService.class);
-		nos.updateOrderStatus(NozzleOrder.ORDER_PAYED, 
-				Converts.bcd2Str(nozzleCodeArr), Converts.bcd2Str(orderArr));
+		NozzleOrderService nos = Boot.appctx.getBean("nozzleOrderService",NozzleOrderService.class);
+		nos.updateOrderStatus(NozzleOrder.ORDER_PAYED,Integer.toString(Converts.bytes2Int(nozzleCodeArr)), Converts.bcd2Str(orderArr));
 	}
 
 }
