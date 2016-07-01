@@ -100,7 +100,7 @@ class RunEPSManager implements Runnable{
 		EPSClientDataManager ecdm = EPSClientDataManager.getInstance(Utils.systemConfiguration.getProperty("eps.server.ip"), 
 				Integer.parseInt(Utils.systemConfiguration.getProperty("eps.server.port")));
 		try {
-			ecdm.submitTransData();
+			ecdm.submitTask();
 		} catch (Exception e) {
 			if(e instanceof java.net.ConnectException){
 				logger.error(e.getMessage());

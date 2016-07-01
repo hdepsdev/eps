@@ -1,13 +1,20 @@
 package com.bhz.eps;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.bhz.eps.entity.NozzleOrder;
 import com.bhz.eps.msg.PaymentReqProto;
+import com.bhz.eps.msg.PaymentReqProto.PaymentReq;
 import com.bhz.eps.msg.PaymentRespProto;
 import com.bhz.eps.msg.PaymentRespProto.PaymentResp;
 import com.bhz.eps.service.NozzleOrderService;
@@ -49,7 +56,24 @@ public class EPSClientDataManager {
 		return manager;
 	}
 	
-	public void submitTransData() throws Exception{
+	public void submitTask(){
+		ExecutorService es = Executors.newFixedThreadPool(5);
+		Future<List<PaymentReq>> back = (Future<List<PaymentReq>>)es.submit(new DataSubmitter());
+		try {
+			List<PaymentReq> result = back.get();
+			if(!result.isEmpty()){
+				submitTransData(result);
+			}
+		} catch (InterruptedException e) {
+			logger.error(e.getMessage());
+		} catch (ExecutionException e) {
+			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+	}
+	
+	private void submitTransData(List<PaymentReq> payload) throws Exception{
 		Bootstrap boot = new Bootstrap();
 		EventLoopGroup worker = new NioEventLoopGroup();
 		try{
@@ -63,7 +87,7 @@ public class EPSClientDataManager {
 						ch.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
 						ch.pipeline().addLast(new ProtobufEncoder());
 						ch.pipeline().addLast(new ProtobufDecoder(PaymentRespProto.PaymentResp.getDefaultInstance()));
-						ch.pipeline().addLast(new EPSClientHandler());
+						ch.pipeline().addLast(new EPSClientHandler(payload));
 					}
 					
 				});
@@ -85,6 +109,10 @@ public class EPSClientDataManager {
 
 class EPSClientHandler extends SimpleChannelInboundHandler<PaymentRespProto.PaymentResp>{
 	private static final Logger logger = LogManager.getLogger(EPSClientHandler.class);
+	List<PaymentReq> payload = new ArrayList<PaymentReq>();
+	public EPSClientHandler(List<PaymentReq> payload) {
+		this.payload = payload;
+	}
 	@Override
 	protected void messageReceived(ChannelHandlerContext ctx, PaymentResp msg) throws Exception {
 		if(msg.getResult().getResultCode().equals("1")){
@@ -96,15 +124,54 @@ class EPSClientHandler extends SimpleChannelInboundHandler<PaymentRespProto.Paym
 		}
 	}
 	
-	
-	
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		for(PaymentReq req:payload){
+			ctx.write(req);
+		}
+		logger.debug("Upload Nozzle orders.");
+		ctx.flush();
+//		NozzleOrderService nos = Boot.appctx.getBean("nozzleOrderService",NozzleOrderService.class);
+//		List<NozzleOrder> orderList = nos.queryUnUploadOrders();
+//		if(orderList == null || orderList.size()==0){
+//			logger.debug("No un_upload nozzle order found.");
+//			ctx.close();
+//		}else{
+//			for(NozzleOrder order:orderList){
+//				PaymentReqProto.PaymentReq.Builder builder = PaymentReqProto.PaymentReq.newBuilder();
+//				builder.setStationCode(order.getStationCode());
+//				builder.setNozzleNumber(Integer.parseInt(order.getNozzleNumber()));
+//				builder.setWorkOrder(order.getWorkOrder());
+//				builder.setPaymentMethod(1);
+//				builder.setPreferentialMethod(1);
+//				builder.setPoints("");
+//				BigDecimal totalAmount = (new BigDecimal(order.getPrice())).multiply(order.getVolumeConsume());
+//				builder.setReceivables(totalAmount.divide(new BigDecimal(100)).toString());
+//				builder.setProceeds(totalAmount.divide(new BigDecimal(100)).toString());
+//				PaymentReqProto.PaymentReq req = builder.build();
+//				ctx.write(req);
+//				logger.debug("Prepare to send NozzleOrder: [ id=" + order.getWorkOrder() + " ]");
+//			}
+//			logger.debug("Upload Nozzle orders.");
+//			ctx.flush();
+//		}
+	}
+}
+
+class DataSubmitter implements Callable<List<PaymentReqProto.PaymentReq>>{
+	private static final Logger logger = LogManager.getLogger(DataSubmitter.class);
+	
+	public DataSubmitter(){
+		
+	}
+	
+	@Override
+	public List<PaymentReq> call() throws Exception {
+		List<PaymentReq> result = new ArrayList<PaymentReq>();
 		NozzleOrderService nos = Boot.appctx.getBean("nozzleOrderService",NozzleOrderService.class);
 		List<NozzleOrder> orderList = nos.queryUnUploadOrders();
 		if(orderList == null || orderList.size()==0){
 			logger.debug("No un_upload nozzle order found.");
-			ctx.close();
 		}else{
 			for(NozzleOrder order:orderList){
 				PaymentReqProto.PaymentReq.Builder builder = PaymentReqProto.PaymentReq.newBuilder();
@@ -118,11 +185,11 @@ class EPSClientHandler extends SimpleChannelInboundHandler<PaymentRespProto.Paym
 				builder.setReceivables(totalAmount.divide(new BigDecimal(100)).toString());
 				builder.setProceeds(totalAmount.divide(new BigDecimal(100)).toString());
 				PaymentReqProto.PaymentReq req = builder.build();
-				ctx.write(req);
+				result.add(req);
 				logger.debug("Prepare to send NozzleOrder: [ id=" + order.getWorkOrder() + " ]");
 			}
-			logger.debug("Upload Nozzle orders.");
-			ctx.flush();
 		}
+		return result;
 	}
+
 }
