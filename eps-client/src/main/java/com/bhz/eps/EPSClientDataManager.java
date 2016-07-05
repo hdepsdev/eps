@@ -57,7 +57,7 @@ public class EPSClientDataManager {
 	}
 	
 	public void submitTask(){
-		ExecutorService es = Executors.newFixedThreadPool(5);
+		ExecutorService es = Executors.newFixedThreadPool(10);
 		Future<List<PaymentReq>> back = (Future<List<PaymentReq>>)es.submit(new DataSubmitter());
 		try {
 			List<PaymentReq> result = back.get();
@@ -70,6 +70,8 @@ public class EPSClientDataManager {
 			logger.error(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage());
+		} finally{
+			es.shutdown();
 		}
 	}
 	
