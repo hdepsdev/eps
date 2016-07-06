@@ -81,4 +81,10 @@ public class Utils {
 		System.arraycopy(b2, 0, result, b1.length, b2.length);
 		return result;
 	}
+	
+	public static void initByteArray(byte[] ba, byte b){
+		for(int i = 0; i < ba.length; i++){
+			ba[i] = b;
+		}
+	}
 }
