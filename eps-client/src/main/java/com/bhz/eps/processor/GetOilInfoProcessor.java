@@ -3,6 +3,7 @@ package com.bhz.eps.processor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import com.bhz.eps.Boot;
@@ -13,7 +14,6 @@ import com.bhz.eps.pdu.TPDU;
 import com.bhz.eps.service.OilInfoService;
 import com.bhz.eps.util.Converts;
 import com.bhz.eps.util.Utils;
-import com.sun.tools.javac.util.Convert;
 
 /**
  * 返回油站班次信息
@@ -40,7 +40,13 @@ public class GetOilInfoProcessor extends BizProcessor{
 		Utils.initByteArray(oilTypeContent, (byte) 0x20);
 		for(int i = 0; i < oilTypeList.size(); i++){
 			oilTypeContent[i*OilInfo.SIZE] = oilTypeList.get(i).getOilId();
-			byte[] oilTypeNameAry = Convert.string2utf(oilTypeList.get(i).getOilName());
+			byte[] oilTypeNameAry = null;
+			try {
+				oilTypeNameAry = oilTypeList.get(i).getOilName().getBytes("utf-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			System.arraycopy(oilTypeNameAry, 0, oilTypeContent, i*OilInfo.SIZE + 1, oilTypeNameAry.length);
 		}
 		
@@ -49,7 +55,13 @@ public class GetOilInfoProcessor extends BizProcessor{
 		Utils.initByteArray(oilCategoryContent, (byte) 0x20);
 		for(int i = 0; i < oilCategoryList.size(); i++){
 			oilCategoryContent[i*OilInfo.SIZE] = oilCategoryList.get(i).getOilId();
-			byte[] oilCategoryNameAry = Convert.string2utf(oilCategoryList.get(i).getOilName());
+			byte[] oilCategoryNameAry = null;
+			try {
+				oilCategoryNameAry = oilCategoryList.get(i).getOilName().getBytes("utf-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			System.arraycopy(oilCategoryNameAry, 0, oilCategoryContent, i*OilInfo.SIZE + 1, oilCategoryNameAry.length);
 		}
 		

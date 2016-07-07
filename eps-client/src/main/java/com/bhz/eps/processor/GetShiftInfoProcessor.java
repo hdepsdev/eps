@@ -3,6 +3,7 @@ package com.bhz.eps.processor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import com.bhz.eps.Boot;
@@ -13,7 +14,6 @@ import com.bhz.eps.pdu.TPDU;
 import com.bhz.eps.service.GetShiftlistService;
 import com.bhz.eps.util.Converts;
 import com.bhz.eps.util.Utils;
-import com.sun.tools.javac.util.Convert;
 
 /**
  * 返回油站班次信息
@@ -37,7 +37,13 @@ public class GetShiftInfoProcessor extends BizProcessor{
 		Utils.initByteArray(shiftInfoContent, (byte) 0x20);
 		for(int i = 0; i < shiftInfolist.size(); i++){
 			shiftInfoContent[i*ShiftInfo.SIZE] = shiftInfolist.get(i).getShiftId();
-			byte[] ShiftNameAry = Convert.string2utf(shiftInfolist.get(i).getShiftName());
+			byte[] ShiftNameAry = null;
+			try {
+				ShiftNameAry = shiftInfolist.get(i).getShiftName().getBytes("utf-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			System.arraycopy(ShiftNameAry, 0, shiftInfoContent, i*ShiftInfo.SIZE + 1, ShiftNameAry.length);
 		}
 		
