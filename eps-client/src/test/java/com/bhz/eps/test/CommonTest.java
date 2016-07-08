@@ -1,13 +1,17 @@
 package com.bhz.eps.test;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
 
+import com.bhz.eps.msg.ManageMessageProto;
+import com.bhz.eps.msg.ManageMessageProto.MsgType;
 import com.bhz.eps.util.Converts;
 import com.bhz.eps.util.Utils;
+import com.google.protobuf.ByteString;
 
 public class CommonTest {
 	@Test
@@ -91,5 +95,48 @@ public class CommonTest {
 		for(byte b:c){
 			System.out.print((char)b);
 		}
+	}
+	
+	@Test
+	public void testZhUTF8(){
+		String s = new String("1早班   2中班   3晚班   ");
+		try {
+			byte[] sb = s.getBytes("utf-8");
+			System.out.println(sb.length);
+			System.out.println(Converts.bytesToHexString(sb));
+//			for(byte b:sb){
+//				System.out.print(Converts.bytesToHexString(bArray)b + "\t");
+//			}
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testShow(){
+		byte[] s = new byte[]{0x39,0x35,0x23,(byte) 0xE6,(byte) 0xB1,(byte)0xBD,(byte)0xE6,(byte)0xB2,(byte)0xB9,0x20,0x20,0x20,0x20,0x20,0x20};
+		try {
+			System.out.println(new String(s,"utf-8").trim());
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void printEnum(){
+		ManageMessageProto.ManageMessage.Builder mb = ManageMessageProto.ManageMessage.newBuilder();
+		ManageMessageProto.Request.Builder rb = ManageMessageProto.Request.newBuilder();
+		ManageMessageProto.LoginRequest.Builder lrb = ManageMessageProto.LoginRequest.newBuilder();
+		lrb.setUsername("yaoh");
+		lrb.setPassword(ByteString.copyFrom("cc".getBytes()));
+		rb.setLoginRequest(lrb.build());
+		mb.setRequest(rb.build());
+		mb.setType(MsgType.Login_Response);
+		mb.setSeqence(123);
+		ManageMessageProto.ManageMessage mm = mb.build();
+		
+		System.out.println(mm.getType().getNumber());
 	}
 }

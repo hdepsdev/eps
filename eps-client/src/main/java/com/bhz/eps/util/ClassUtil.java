@@ -31,21 +31,21 @@ import com.bhz.eps.annotation.BizProcessorSpec;
 public class ClassUtil {
 	private static final Logger logger = LogManager.getLogger(ClassUtil.class);
 	// msgType->请求、响应类的class对象
-	private static Map<Short, Class<?>> typeToMsgClassMap;
+	private static Map<Integer, Class<?>> typeToMsgClassMap;
 	
 	// msgType->业务逻辑执行器的class对象
-	private static Map<Short, Class<?>> typeToProcessorClassMap;
+	private static Map<Integer, Class<?>> typeToProcessorClassMap;
 	
 	// class文件过滤器
 	private static MyFilter myFilter = new MyFilter(true);
 	
 	// 根据类型得到对应的消息类的class对象
-	public static Class<?> getMsgClassByType(short type) {
+	public static Class<?> getMsgClassByType(int type) {
 		return typeToMsgClassMap.get(type);
 	}
 	
 	// 根据类型得到对应的业务逻辑执行器的class对象
-	public static Class<?> getProcessorClassByType(short type) {
+	public static Class<?> getProcessorClassByType(int type) {
 		return typeToProcessorClassMap.get(type);
 	}
 	
@@ -59,7 +59,7 @@ public class ClassUtil {
 	 */
 	public static void initTypeToMsgClassMap() throws ClassNotFoundException, IOException {
 		
-		Map<Short, Class<?>> tmpMap = new HashMap<Short, Class<?>>();
+		Map<Integer, Class<?>> tmpMap = new HashMap<Integer, Class<?>>();
 		
 		Set<Class<?>> classSet = getClasses("com.bhz.eps.msg");
 		if (classSet != null) {
@@ -84,7 +84,7 @@ public class ClassUtil {
 	 */
 	public static void initTypeToProcessorClassMap() throws ClassNotFoundException, IOException {
 		logger.trace("Initialize BizProcessors...");
-		Map<Short, Class<?>> tmpMap = new HashMap<Short, Class<?>>();
+		Map<Integer, Class<?>> tmpMap = new HashMap<Integer, Class<?>>();
 		
 		Set<Class<?>> classSet = getClasses("com.bhz.eps.processor");
 		if (classSet != null) {
@@ -131,7 +131,9 @@ public class ClassUtil {
 				String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
 				logger.debug("Scanning biz processors in File Path: \"" + filePath + "\"");
 				// 以文件的方式扫描整个包下的文件，并添加到集合中
+				logger.debug("============== Processors in Java Class File ===============");
 				findAndAddClassesInPackageByFile(packageName, filePath,recursive, classes);
+				logger.debug("============================================================");
 			} else if ("jar".equals(protocol)) {
 				// 如果是jar包文件
 				// 定义一个JarFile
@@ -142,6 +144,7 @@ public class ClassUtil {
 				logger.debug("Scanning biz processors in \"JAR File: " + jar.getName() + "\"");
 				// 从此jar包，得到一个枚举类
 				Enumeration<JarEntry> entries = jar.entries();
+				logger.debug("================= Processors in Jar File ==================");
 				// 同样的进行循环迭代
 				while (entries.hasMoreElements()) {
 					// 获取jar里的一个实体，可以是目录，和一些jar包里的其他文件，如META-INF等文件
@@ -169,10 +172,12 @@ public class ClassUtil {
 								String className = name.substring(packageName.length() + 1,name.length() - 6);
 								// 添加到classes
 								classes.add(Class.forName(packageName + '.' + className));
+								logger.debug(packageName + '.' + className);
 							}
 						}
 					}
 				}
+				logger.debug("=======================================================");
 			}
 		}
 
@@ -209,6 +214,7 @@ public class ClassUtil {
 				
 				// 添加到集合中去
 				classes.add(Thread.currentThread().getContextClassLoader().loadClass(packageName + '.' + className));
+				logger.debug(packageName + '.' + className);
 			}
 		}
 	}

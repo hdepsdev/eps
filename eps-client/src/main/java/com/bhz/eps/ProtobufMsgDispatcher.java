@@ -1,13 +1,13 @@
 package com.bhz.eps;
 
-import io.netty.channel.Channel;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.bhz.eps.pdu.TPDU;
+import com.bhz.eps.msg.ManageMessageProto;
 import com.bhz.eps.processor.BizProcessor;
 import com.bhz.eps.util.ClassUtil;
+
+import io.netty.channel.Channel;
 
 /**
  * 抽象了分发器
@@ -17,17 +17,14 @@ import com.bhz.eps.util.ClassUtil;
  * @author yaoh
  *
  */
-
-public class Dispatcher {
-	
-	private static final int MAX_THREAD_NUM = 100;
+public class ProtobufMsgDispatcher {
+	private static final int MAX_THREAD_NUM = 10;
 	
 	private static ExecutorService executorService = Executors.newFixedThreadPool(MAX_THREAD_NUM);
-	
 	public static void submit(Channel channel, Object msgObject) throws InstantiationException, IllegalAccessException {
+		ManageMessageProto.ManageMessage msg = (ManageMessageProto.ManageMessage)msgObject;
 		
-		TPDU tpdu = (TPDU) msgObject;
-		Class<?> processorClass = ClassUtil.getProcessorClassByType(tpdu.getBody().getHeader().getCmd().shortValue());
+		Class<?> processorClass = ClassUtil.getProcessorClassByType(msg.getType().getNumber());
 		BizProcessor processor = (BizProcessor) processorClass.newInstance();
 		processor.setChannel(channel);
 		processor.setMsgObject(msgObject);

@@ -1,5 +1,6 @@
 package com.bhz.eps;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -80,6 +81,7 @@ public class Boot {
 		if(Utils.systemConfiguration.getProperty("eps.client.data.upload.need").equalsIgnoreCase("true")){
 			startEPSManager();
 		}
+		startConfigureManager();
 		Boot b = new Boot();
 		b.start();
 	}
@@ -89,6 +91,11 @@ public class Boot {
 		ses.scheduleAtFixedRate(new RunEPSManager(), 0, 
 				Integer.parseInt(Utils.systemConfiguration.getProperty("eps.client.data.upload.interval")), 
 				TimeUnit.SECONDS);
+	}
+	
+	private static void startConfigureManager(){
+		ExecutorService es = Executors.newFixedThreadPool(1);
+		es.execute(new RunEPSConfigureManager());
 	}
 }
 
@@ -107,6 +114,21 @@ class RunEPSManager implements Runnable{
 			}else{
 				e.printStackTrace();
 			}
+		}
+	}
+	
+}
+
+class RunEPSConfigureManager implements Runnable{
+
+	@Override
+	public void run() {
+		EPSClientConfigureManager ecm = new EPSClientConfigureManager();
+		try {
+			ecm.startConfigureManager();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
