@@ -28,7 +28,7 @@ public class LockOrderProcessor extends BizProcessor{
 		byte[] payInfoNum = new byte[11];
 		System.arraycopy(cnt, 4, payInfoNum, 0, payInfoNum.length);
 		
-		byte re = 0x01;
+		byte re = 0x7F;
 		try{
 			NozzleOrderService nos = Boot.appctx.getBean(
 					"nozzleOrderService",NozzleOrderService.class);
