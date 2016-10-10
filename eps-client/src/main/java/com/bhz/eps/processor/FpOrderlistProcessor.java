@@ -65,9 +65,9 @@ public class FpOrderlistProcessor extends BizProcessor {
             if (bi != 31) {
                 logger.error("HHT Fuel Delivery Request/Response failed");
             } else {
-                bytes = new byte[6];
+                bytes = new byte[6];//Result Code与油枪编号
                 in.read(bytes);
-                bytes = new byte[2];
+                bytes = new byte[2];//Number Deliveries
                 in.read(bytes);
                 int dataSize = Integer.parseInt(new String(bytes, "utf-8"));
                 for (int i = 0; i < dataSize; i++) {
@@ -117,10 +117,6 @@ public class FpOrderlistProcessor extends BizProcessor {
                     logger.error("", e);
                 }
             }
-        }
-
-        if (list.size() == 0) {
-            return;
         }
 
         //创建返回消息
