@@ -59,10 +59,10 @@ public class FpOrderlistProcessor extends BizProcessor {
             out = socket.getOutputStream();
             in = socket.getInputStream();
             out.write(hhtByte.array());
-            byte[] bytes = new byte[15];//头
+            byte[] bytes = new byte[15];//包头及其他与本功能无关的数据
             in.read(bytes);
-            int bi = in.read();//成功标识
-            if (bi != 31) {
+            int bi = in.read();//bpos返回成功标识，0x31为成功
+            if (bi != 0x31) {
                 logger.error("HHT Fuel Delivery Request/Response failed");
             } else {
                 bytes = new byte[6];//Result Code与油枪编号
