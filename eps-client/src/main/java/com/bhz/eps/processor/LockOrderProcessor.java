@@ -1,5 +1,14 @@
 package com.bhz.eps.processor;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.Socket;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -10,6 +19,7 @@ import com.bhz.eps.msg.BizMessageType;
 import com.bhz.eps.pdu.TPDU;
 import com.bhz.eps.service.NozzleOrderService;
 import com.bhz.eps.util.Converts;
+import com.bhz.eps.util.Utils;
 
 
 /**
@@ -19,41 +29,87 @@ import com.bhz.eps.util.Converts;
  */
 @BizProcessorSpec(msgType=BizMessageType.LOCK_ORDER)
 public class LockOrderProcessor extends BizProcessor{
+	 private static final Logger logger = LogManager.getLogger(LockOrderProcessor.class);
+	
 	@Override
 	public void process() {
 		TPDU tpdu = (TPDU)this.msgObject;
 		byte[] cnt = tpdu.getBody().getData().getContent();
 		byte[] fpNumber = new byte[4];
 		System.arraycopy(cnt, 0, fpNumber, 0, fpNumber.length);
-		byte[] payInfoNum = new byte[11];
-		System.arraycopy(cnt, 4, payInfoNum, 0, payInfoNum.length);
+		byte[] realPayInfoNum = new byte[9];
+		System.arraycopy(cnt, 6, realPayInfoNum, 0, realPayInfoNum.length);//支付流水号：BCD，原长度为11，后根据HHT协议修改长度为9，前两位为补0，直接舍弃即可
 		
-		byte re = 0x7F;
-		try{
-			NozzleOrderService nos = Boot.appctx.getBean(
-					"nozzleOrderService",NozzleOrderService.class);
-			
-			NozzleOrder no = nos.getOrderByNozzleNumberAndWorkOrder
-					(Integer.toString(Converts.bytes2Int(fpNumber)), 
-							Converts.bcd2Str(payInfoNum));
-			
-			if (no != null) {
-				if(no.getOrderStatus() == NozzleOrder.ORDER_LOCKED)
-				{
-					re = 0x01;
-				}					
-				else
-				{
-					nos.updateOrderStatus(NozzleOrder.ORDER_LOCKED, 
-							Integer.toString(Converts.bytes2Int(fpNumber))
-							, Converts.bcd2Str(payInfoNum));
-					re = 0x00;
-				}
-			}
-		}
-		catch(Exception e){
-			
-		}
+		 byte re = 0x7F;
+
+	        String bposIp = Utils.systemConfiguration.getProperty("bpos.server.ip");
+	        String bposPort = Utils.systemConfiguration.getProperty("bpos.server.port");
+	        String version = Utils.systemConfiguration.getProperty("hht.protocol.version");
+	        String terminal = Utils.systemConfiguration.getProperty("eps.client.terminal");
+
+	        //创建发送给bpos的消息
+	        ByteBuf hhtByte = Unpooled.buffer(27);
+	        Utils.setHeaderForHHT(hhtByte, Integer.toHexString(21), version, terminal, "4");//Lock/Unlock delivery request的messageType为4
+	        try {
+	            hhtByte.writeByte(0x30);//LOCK Flag
+	            hhtByte.writeBytes(Integer.toString(Converts.bytes2Int(fpNumber)).getBytes("utf-8"));//油枪编号
+	            hhtByte.writeBytes(Converts.bcd2Str(realPayInfoNum).getBytes("utf-8"));//流水id
+	        } catch (UnsupportedEncodingException e) {
+	            logger.error("", e);
+	        }
+
+	        //发送消息，并记录结果
+	        Socket socket = null;
+	        OutputStream out = null;
+	        InputStream in = null;
+	        try {
+	            socket = new Socket(bposIp, Integer.parseInt(bposPort));
+	            out = socket.getOutputStream();
+	            in = socket.getInputStream();
+	            out.write(hhtByte.array());
+	            byte[] bytes = new byte[19];//包头
+	            in.read(bytes);
+	            int bi = in.read();//bpos返回成功标识，0x31为成功
+	            if (bi != 0x31) {
+	                bytes = new byte[4];//Result Code
+	                in.read(bytes);
+	                int resultCode = Converts.bytes2Int(bytes);
+	                if (resultCode == 2003 || resultCode == 2004) {
+						re = 0x01;
+					}
+	                else {
+	                	re = 0x7F;
+	                	logger.error("HHT LOCK Delivery Request failed");
+					}
+	            }
+	            else{
+	            	re = 0x00;
+	            }
+	        } catch (IOException e) {
+	            logger.error("", e);
+	        } finally {
+	            if (socket != null) {
+	                try {
+	                    socket.close();
+	                } catch (IOException e) {
+	                    logger.error("", e);
+	                }
+	            }
+	            if (out != null) {
+	                try {
+	                    out.close();
+	                } catch (IOException e) {
+	                    logger.error("", e);
+	                }
+	            }
+	            if (in != null) {
+	                try {
+	                    in.close();
+	                } catch (IOException e) {
+	                    logger.error("", e);
+	                }
+	            }
+	        }
 		
 		//创建返回消息
 
