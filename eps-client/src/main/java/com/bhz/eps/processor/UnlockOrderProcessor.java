@@ -17,24 +17,24 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 
 @BizProcessorSpec(msgType = BizMessageType.UNLOCK_ORDER)
-public class UnlockOrderProcessor extends BizProcessor{
+public class UnlockOrderProcessor extends BizProcessor {
     private static final Logger logger = LogManager.getLogger(UnlockOrderProcessor.class);
 
     @Override
-	public void process() {
-		TPDU tpdu = (TPDU)this.msgObject;
-		byte[] cnt = tpdu.getBody().getData().getContent();
-		byte[] nozzleCodeArr = new byte[4];//油枪编号：U32
-		byte[] orderArr = new byte[9];//支付流水号：BCD，原长度为11，后根据HHT协议修改长度为9，前两位为补0，直接舍弃即可
-		
-		int idx = 0;
-		System.arraycopy(cnt, idx, nozzleCodeArr, 0, nozzleCodeArr.length);
-		idx += nozzleCodeArr.length;
+    public void process() {
+        TPDU tpdu = (TPDU) this.msgObject;
+        byte[] cnt = tpdu.getBody().getData().getContent();
+        byte[] nozzleCodeArr = new byte[4];//油枪编号：U32
+        byte[] orderArr = new byte[9];//支付流水号：BCD，原长度为11，后根据HHT协议修改长度为9，前两位为补0，直接舍弃即可
+
+        int idx = 0;
+        System.arraycopy(cnt, idx, nozzleCodeArr, 0, nozzleCodeArr.length);
+        idx += nozzleCodeArr.length;
         idx += 2;//舍弃补0的前两位
-		System.arraycopy(cnt, idx, orderArr, 0, orderArr.length);
-		idx += orderArr.length;
-		
-		byte re = 0x01;//成功标识，0x00为成功
+        System.arraycopy(cnt, idx, orderArr, 0, orderArr.length);
+        idx += orderArr.length;
+
+        byte re = 0x01;//成功标识，0x00为成功
 
         String bposIp = Utils.systemConfiguration.getProperty("bpos.server.ip");
         String bposPort = Utils.systemConfiguration.getProperty("bpos.server.port");
@@ -45,7 +45,7 @@ public class UnlockOrderProcessor extends BizProcessor{
         ByteBuf hhtByte = Unpooled.buffer(27);
         Utils.setHeaderForHHT(hhtByte, Integer.toHexString(21), version, terminal, "4");//Lock/Unlock delivery request的messageType为4
         try {
-            hhtByte.writeByte(31);//解锁标识
+            hhtByte.writeByte(0x31);//解锁标识
             hhtByte.writeBytes(Integer.toString(Converts.bytes2Int(nozzleCodeArr)).getBytes("utf-8"));//油枪编号
             hhtByte.writeBytes(Converts.bcd2Str(orderArr).getBytes("utf-8"));//流水id
         } catch (UnsupportedEncodingException e) {
@@ -92,18 +92,18 @@ public class UnlockOrderProcessor extends BizProcessor{
                 }
             }
         }
-		
-		//创建返回消息
-		byte[] bizHeaderArr = tpdu.getBody().getHeader().getOriginalContent();
-		ByteBuf b = Unpooled.buffer(bizHeaderArr.length + 1);
-		
-		b.writeBytes(bizHeaderArr);
-		b.writeByte(re);
-		
-		byte[] dataArr = b.array();
-		b.release();
-		
-		this.channel.writeAndFlush(dataArr);
-	}
+
+        //创建返回消息
+        byte[] bizHeaderArr = tpdu.getBody().getHeader().getOriginalContent();
+        ByteBuf b = Unpooled.buffer(bizHeaderArr.length + 1);
+
+        b.writeBytes(bizHeaderArr);
+        b.writeByte(re);
+
+        byte[] dataArr = b.array();
+        b.release();
+
+        this.channel.writeAndFlush(dataArr);
+    }
 
 }
