@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bhz.eps.dao.NozzleOrderDao">
+	<insert id="addOrder" parameterType="com.bhz.eps.entity.NozzleOrder">
+		INSERT INTO NOZZLE_ORDER(WORK_ORDER,NOZZLE_NUMBER,ORDER_STATUS,OIL_TYPE,OIL_CATEGORY,PRICE,VOLUME_CONSUME,STATION_CODE,UPLOAD_STATUS,UPLOAD_TIME) 
+		values(#{workOrder,jdbcType=VARCHAR},#{nozzleNumber,jdbcType=VARCHAR},#{orderStatus,jdbcType=INTEGER}
+				,#{oilType,jdbcType=INTEGER},#{oilCategory,jdbcType=INTEGER},#{price,jdbcType=INTEGER}
+				,#{volumeConsume,jdbcType=DECIMAL},#{stationCode,jdbcType=VARCHAR},#{uploadStatus,jdbcType=INTEGER}
+				,#{uploadDateTime,jdbcType=VARCHAR})
+	</insert>
+	<select id="getOrderByWorkorder" resultMap="nozzleOrder" parameterType="string">
+		SELECT * FROM nozzle_order where work_order=#{workOrder}
+	</select>	
+	<select id="getOrderByNozzleNumberAndWorkOrder" resultMap="nozzleOrder" parameterType="string">
+		SELECT * FROM nozzle_order where nozzle_number=#{nozzleNumber} and work_order=#{workOrder}
+	</select>	
+	<update id="updateOrderStatus">
+		UPDATE nozzle_order SET order_status=#{status} WHERE nozzle_number=#{nozzleNumber} and work_order=#{workOrder}
+	</update>
+	<select id="queryUnUploadOrders" resultMap="nozzleOrder">
+		SELECT * FROM nozzle_order t where t.upload_status=1 and t.order_status=2
+	</select>
+	<update id="updateUploadStatus" parameterType="Map">
+		UPDATE nozzle_order SET upload_status=#{uploadStatus},upload_time=#{uploadTime} WHERE work_order=#{workOrder}
+	</update>
+	
+	<resultMap type="com.bhz.eps.entity.NozzleOrder" id="nozzleOrder">
+		<id property="workOrder" column="work_order"/>
+		<result property="nozzleNumber" column="NOZZLE_NUMBER"/>
+		<result property="orderStatus" column="ORDER_STATUS"/>
+		<result property="oilType" column="OIL_TYPE"/>
+		<result property="oilCategory" column="OIL_CATEGORY"/>
+		<result property="price" column="PRICE"/>
+		<result property="volumeConsume" column="VOLUME_CONSUME"/>
+		<result property="stationCode" column="STATION_CODE"/>
+		<result property="uploadStatus" column="UPLOAD_STATUS"/>
+		<result property="uploadDateTime" column="UPLOAD_TIME"/>
+	</resultMap>
+</mapper>

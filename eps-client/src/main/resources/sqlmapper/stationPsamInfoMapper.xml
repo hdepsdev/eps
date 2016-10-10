@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bhz.eps.dao.StationPsamInfoDao">
+	<select id="checkStationPsam" resultMap="stationPsamInfo" parameterType="string">
+		SELECT * FROM oil_station WHERE code=#{code}
+	</select>
+	
+	<resultMap type="com.bhz.eps.entity.StationPsamInfo" id="stationPsamInfo">
+		<id property="stationCode" column="code"/>
+		<result property="stationName" column="name"/>
+		<result property="stationStatus" column="status"/>
+		<result property="stationAddress" column="address"/>
+		<result property="stationTelephone" column="telephone"/>
+		<result property="stationManager" column="manager"/>
+		<result property="ownerCode" column="owner_code"/>
+		<result property="establishedDate" column="established_date"/>
+	</resultMap>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bhz.eps.dao.OilInfoDao">
+	<select id="getOilTypeList" resultMap="oilType">
+		select distinct(oil_type),type_text from oil
+	</select>
+	
+	<select id="getOilCategoryList" resultMap="oilCategory">
+		select distinct(oil_category),category_text from oil
+	</select>
+	
+	<resultMap type="com.bhz.eps.entity.OilInfo" id="oilType">
+		<id property="oilId" column="oil_type"/>
+		<id property="oilName" column="type_text"/>
+	</resultMap>
+	
+	<resultMap type="com.bhz.eps.entity.OilInfo" id="oilCategory">
+		<id property="oilId" column="oil_category"/>
+		<id property="oilName" column="category_text"/>
+	</resultMap>
+</mapper>
