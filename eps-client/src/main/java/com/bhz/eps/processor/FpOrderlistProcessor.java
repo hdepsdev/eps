@@ -43,7 +43,7 @@ public class FpOrderlistProcessor extends BizProcessor {
         ByteBuf hhtByte = Unpooled.buffer(17);
         Utils.setHeaderForHHT(hhtByte, Integer.toHexString(11), version, terminal, "2");//Fuel delivery details request的messageType为2
         try {
-            hhtByte.writeBytes(Integer.toString(Converts.bytes2Int(fpNumber)).getBytes("utf-8"));//油枪编号
+            hhtByte.writeBytes(Converts.addZeroInLeft2Str(Integer.toString(Converts.bytes2Int(fpNumber)), 2).getBytes("utf-8"));//油枪编号
         } catch (UnsupportedEncodingException e) {
             logger.error("", e);
         }
@@ -59,17 +59,22 @@ public class FpOrderlistProcessor extends BizProcessor {
             out = socket.getOutputStream();
             in = socket.getInputStream();
             out.write(hhtByte.array());
+            out.flush();
             byte[] bytes = new byte[15];//包头及其他与本功能无关的数据
             in.read(bytes);
             int bi = in.read();//bpos返回成功标识，0x31为成功
+            bytes = new byte[4];//Result Code
+            in.read(bytes);
+            String resultCode = new String(bytes, "utf-8");
+            bytes = new byte[2];//油枪编号
+            in.read(bytes);
+            String pumpNumber = new String(bytes, "utf-8");
+            bytes = new byte[2];//Number Deliveries
+            in.read(bytes);
+            int dataSize = Integer.parseInt(new String(bytes, "utf-8"));
             if (bi != 0x31) {
-                logger.error("HHT Fuel Delivery Request/Response failed");
+                logger.error("HHT Fuel Delivery Request/Response failed. resultCode:" + resultCode + ",pumpNumber:" + pumpNumber);
             } else {
-                bytes = new byte[6];//Result Code与油枪编号
-                in.read(bytes);
-                bytes = new byte[2];//Number Deliveries
-                in.read(bytes);
-                int dataSize = Integer.parseInt(new String(bytes, "utf-8"));
                 for (int i = 0; i < dataSize; i++) {
                     fpEntity entity = new fpEntity();
                     list.add(entity);

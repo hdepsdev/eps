@@ -25,12 +25,11 @@ public class UnlockOrderProcessor extends BizProcessor {
         TPDU tpdu = (TPDU) this.msgObject;
         byte[] cnt = tpdu.getBody().getData().getContent();
         byte[] nozzleCodeArr = new byte[4];//油枪编号：U32
-        byte[] orderArr = new byte[9];//支付流水号：BCD，原长度为11，后根据HHT协议修改长度为9，前两位为补0，直接舍弃即可
+        byte[] orderArr = new byte[11];//支付流水号：BCD
 
         int idx = 0;
         System.arraycopy(cnt, idx, nozzleCodeArr, 0, nozzleCodeArr.length);
         idx += nozzleCodeArr.length;
-        idx += 2;//舍弃补0的前两位
         System.arraycopy(cnt, idx, orderArr, 0, orderArr.length);
         idx += orderArr.length;
 
@@ -46,8 +45,8 @@ public class UnlockOrderProcessor extends BizProcessor {
         Utils.setHeaderForHHT(hhtByte, Integer.toHexString(21), version, terminal, "4");//Lock/Unlock delivery request的messageType为4
         try {
             hhtByte.writeByte(0x31);//解锁标识
-            hhtByte.writeBytes(Integer.toString(Converts.bytes2Int(nozzleCodeArr)).getBytes("utf-8"));//油枪编号
-            hhtByte.writeBytes(Converts.bcd2Str(orderArr).getBytes("utf-8"));//流水id
+            hhtByte.writeBytes(Converts.addZeroInLeft2Str(Integer.toString(Converts.bytes2Int(nozzleCodeArr)), 2).getBytes("utf-8"));//油枪编号
+            hhtByte.writeBytes(Converts.addZeroInLeft2Str(Integer.valueOf(Converts.bcd2Str(orderArr)).toString(), 9).getBytes("utf-8"));//流水id
         } catch (UnsupportedEncodingException e) {
             logger.error("", e);
         }
@@ -64,8 +63,13 @@ public class UnlockOrderProcessor extends BizProcessor {
             byte[] bytes = new byte[19];//包头及其他与本功能无关的数据
             in.read(bytes);
             int bi = in.read();//bpos返回成功标识，0x31为成功
+            bytes = new byte[4];//Result Code
+            in.read(bytes);
+            String resultCode = new String(bytes, "utf-8");
             if (bi == 0x31) {
                 re = 0x00;
+            } else {
+                logger.error("HHT HHT UNLOCK Delivery Request failed. resultCode:" + resultCode);
             }
         } catch (IOException e) {
             logger.error("", e);
