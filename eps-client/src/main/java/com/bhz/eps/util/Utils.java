@@ -1,6 +1,7 @@
 package com.bhz.eps.util;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.UUID;
@@ -87,4 +88,19 @@ public class Utils {
 			ba[i] = b;
 		}
 	}
+
+    public static void setHeaderForHHT(ByteBuf hhtByte, String hexLength, String version, String terminal, String messageType) {
+        byte[] arr = Converts.hexStringToByte(hexLength);
+        byte[] length = Converts.addZeroInLeftSide(arr, 4);
+        hhtByte.writeBytes(length);
+        hhtByte.writeByte(0x00);
+        hhtByte.writeByte(0x00);
+        try {
+            hhtByte.writeBytes(Converts.addZeroInLeft2Str(version, 2).getBytes("utf-8"));
+            hhtByte.writeBytes(Converts.addZeroInLeft2Str(terminal, 3).getBytes("utf-8"));
+            hhtByte.writeBytes(Converts.addZeroInLeft2Str(messageType, 4).getBytes("utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
 }
