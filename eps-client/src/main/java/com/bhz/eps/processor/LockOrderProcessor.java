@@ -37,8 +37,8 @@ public class LockOrderProcessor extends BizProcessor{
 		byte[] cnt = tpdu.getBody().getData().getContent();
 		byte[] fpNumber = new byte[4];
 		System.arraycopy(cnt, 0, fpNumber, 0, fpNumber.length);
-		byte[] realPayInfoNum = new byte[9];
-		System.arraycopy(cnt, 6, realPayInfoNum, 0, realPayInfoNum.length);//支付流水号：BCD，原长度为11，后根据HHT协议修改长度为9，前两位为补0，直接舍弃即可
+		byte[] realPayInfoNum = new byte[11];
+		System.arraycopy(cnt, 4, realPayInfoNum, 0, realPayInfoNum.length);//支付流水号：BCD 11
 		
 		 byte re = 0x7F;
 
@@ -52,8 +52,8 @@ public class LockOrderProcessor extends BizProcessor{
 	        Utils.setHeaderForHHT(hhtByte, Integer.toHexString(21), version, terminal, "4");//Lock/Unlock delivery request的messageType为4
 	        try {
 	            hhtByte.writeByte(0x30);//LOCK Flag
-	            hhtByte.writeBytes(Integer.toString(Converts.bytes2Int(fpNumber)).getBytes("utf-8"));//油枪编号
-	            hhtByte.writeBytes(Converts.bcd2Str(realPayInfoNum).getBytes("utf-8"));//流水id
+                hhtByte.writeBytes(Converts.addZeroInLeft2Str(Integer.toString(Converts.bytes2Int(fpNumber)), 2).getBytes("utf-8"));//油枪编号
+                hhtByte.writeBytes(Converts.addZeroInLeft2Str(Integer.valueOf(Converts.bcd2Str(realPayInfoNum)).toString(), 9).getBytes("utf-8"));//流水id
 	        } catch (UnsupportedEncodingException e) {
 	            logger.error("", e);
 	        }
