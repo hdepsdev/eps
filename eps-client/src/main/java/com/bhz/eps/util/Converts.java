@@ -438,7 +438,7 @@ public final class Converts {
     }
     public static int bytesToInt(byte[] bytes){
     	byte[] dest = new byte[4];
-        if(bytes.length < 4){
+        if(bytes.length <= 4){
         	for(int j=0;j<bytes.length;j++){
         		dest[3-j] = bytes[bytes.length-1-j];
         	}
