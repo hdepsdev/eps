@@ -90,8 +90,7 @@ public class Utils {
 	}
 
     public static void setHeaderForHHT(ByteBuf hhtByte, String hexLength, String version, String terminal, String messageType) {
-        byte[] arr = Converts.hexStringToByte(hexLength);
-        byte[] length = Converts.addZeroInLeftSide(arr, 4);
+        byte[] length = hexStringToByteAndAddZeroInLeftSide(hexLength, 4);
         hhtByte.writeBytes(length);
         hhtByte.writeByte(0x00);
         hhtByte.writeByte(0x00);
@@ -102,5 +101,9 @@ public class Utils {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+    }
+
+    public static byte[] hexStringToByteAndAddZeroInLeftSide(String hexLength, int fixedLength) {
+        return Converts.addZeroInLeftSide(Converts.hexStringToByte(Converts.addZeroInLeft2Str(hexLength.toUpperCase(), 2)), fixedLength);
     }
 }
