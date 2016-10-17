@@ -144,6 +144,16 @@ public class BPosEmulator {
                     content.write(resultCode.getBytes("utf-8"));
 
                 } else if (COMPLETE.equals(messageType)) {//交易完成
+                    bytes = new byte[9];//Transaction Number
+                    in.read(bytes);
+                    String id = new String(bytes, "utf-8");
+                    bytes = new byte[14];
+                    in.read(bytes);//Transaction Date
+                    String date = new String(bytes, "utf-8");
+                    in.read(bytes);//Total Transaction Value
+                    String value = new String(bytes, "utf-8");
+                    in.read(bytes);//Total Transaction Tax
+                    String tax = new String(bytes, "utf-8");
                     content.write(REQUEST_RESULT.getBytes("utf-8"));//向返回包中写入返回的messageType
                     content.write(messageType.getBytes("utf-8"));//向返回包中写入请求的messageType
                     content.write(0x31);//Success:0x31,Fail:0x30
