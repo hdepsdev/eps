@@ -8,14 +8,14 @@ import com.bhz.eps.util.Converts;
 public class PayCompleteMessage extends AbstractPosMessage{
 	@Override
 	public byte[] generateMessage() {
-		int nozzlecode = Integer.parseInt("80087938");
+		int nozzlecode = Integer.parseInt("001");
 		ByteBuf bb = Unpooled.buffer();
 		byte[] macByte = new byte[4];
 		long size = 40;
 		bb.writeBytes(genTPDUHeader(8 + size + 4));
 		bb.writeBytes(genBizHeader(7));
 		bb.writeInt(nozzlecode);//油枪编号
-		bb.writeBytes(Converts.str2Bcd("2016060716553355896150"));//支付信息流水号
+		bb.writeBytes(Converts.str2Bcd("0000000000000000047506"));//支付信息流水号
 		bb.writeByte(1);//支付方式
 		bb.writeByte(0);
 		bb.writeByte(0);//优惠方式

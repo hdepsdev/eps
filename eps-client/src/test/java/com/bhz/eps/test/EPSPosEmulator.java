@@ -177,7 +177,7 @@ class PayCompleteRun implements Runnable{
 	public void run() {
 		PayCompleteMessage msg = new PayCompleteMessage();
 		try {
-			ec.connect("10.1.1.145", 9000, msg.generateMessage());
+			ec.connect("localhost", 9000, msg.generateMessage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
