@@ -80,7 +80,7 @@ public class FpOrderlistProcessor extends BizProcessor {
                     list.add(entity);
                     bytes = new byte[9];//流水id
                     in.read(bytes);
-                    entity.id = Converts.addZeroInLeft2Str(Long.valueOf(new String(bytes, "utf-8")).toString(), 11);
+                    entity.id = Converts.addZeroInLeft2Str(Long.valueOf(new String(bytes, "utf-8")).toString(), 22);
                     bytes = new byte[3];//油品编号长度
                     in.read(bytes);
                     bytes = new byte[Integer.parseInt(new String(bytes, "utf-8"))];//油品编号
