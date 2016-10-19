@@ -53,7 +53,7 @@ public class LockOrderProcessor extends BizProcessor{
 	        try {
 	            hhtByte.writeByte(0x30);//LOCK Flag
                 hhtByte.writeBytes(Converts.addZeroInLeft2Str(Integer.toString(Converts.bytes2Int(fpNumber)), 2).getBytes("utf-8"));//油枪编号
-                hhtByte.writeBytes(Converts.addZeroInLeft2Str(Integer.valueOf(Converts.bcd2Str(realPayInfoNum)).toString(), 9).getBytes("utf-8"));//流水id
+                hhtByte.writeBytes(Converts.addZeroInLeft2Str(Converts.bcd2Str(realPayInfoNum).substring(13), 9).getBytes("utf-8"));//流水id 原为22位，现为9位，截取后9位
 	        } catch (UnsupportedEncodingException e) {
 	            logger.error("", e);
 	        }
