@@ -1,8 +1,13 @@
 package com.bhz.eps.processor;
 
+import com.bhz.eps.Boot;
 import com.bhz.eps.annotation.BizProcessorSpec;
+import com.bhz.eps.entity.NozzleOrder;
+import com.bhz.eps.entity.OilInfo;
 import com.bhz.eps.msg.BizMessageType;
 import com.bhz.eps.pdu.TPDU;
+import com.bhz.eps.service.NozzleOrderService;
+import com.bhz.eps.service.OilInfoService;
 import com.bhz.eps.util.Converts;
 import com.bhz.eps.util.Utils;
 import io.netty.buffer.ByteBuf;
@@ -14,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +36,13 @@ public class FpOrderlistProcessor extends BizProcessor {
 
     @Override
     public void process() {
+        NozzleOrderService nos = Boot.appctx.getBean("nozzleOrderService", NozzleOrderService.class);
+        OilInfoService ois = Boot.appctx.getBean("oilInfoService", OilInfoService.class);
+        List<OilInfo> oilCategoryList = ois.getOilCategoryList();
+        List<OilInfo> oilTypeList = ois.getOilTypeList();
+
         TPDU tpdu = (TPDU) this.msgObject;
+        String stationCode = tpdu.getBody().getHeader().getStationID();
         byte[] cnt = tpdu.getBody().getData().getContent();
         byte[] fpNumber = new byte[4];
         System.arraycopy(cnt, 0, fpNumber, 0, fpNumber.length);
@@ -85,17 +98,61 @@ public class FpOrderlistProcessor extends BizProcessor {
                     in.read(bytes);
                     bytes = new byte[Integer.parseInt(new String(bytes, "utf-8"))];//油品编号
                     in.read(bytes);
+                    String oilNumber = new String(bytes, "utf-8");
                     bytes = new byte[3];//油品名称长度
                     in.read(bytes);
                     bytes = new byte[Integer.parseInt(new String(bytes, "utf-8"))];//油品名称
                     in.read(bytes);
+                    String oilName = new String(bytes, "utf-8");
                     bytes = new byte[14];//金额总数，单位分
                     in.read(bytes);
                     entity.value = Long.valueOf(new String(bytes, "utf-8"));
                     in.read(bytes);//数量，单位毫升
+                    String volumeStr = new String(bytes, "utf-8");
                     in.read(bytes);//单价
+                    String priceStr = new String(bytes, "utf-8");
                     bytes = new byte[2];//锁
                     in.read(bytes);
+
+                    //将获取到的待支付列表保存进数据库，用于记录与统计
+                    pumpNumber = Integer.valueOf(pumpNumber).toString();
+                    Byte oilType = null;
+                    for (OilInfo oil : oilTypeList) {
+                        if (oilName.contains(oil.getOilName())) {
+                            oilType = oil.getOilId();
+                            break;
+                        }
+                    }
+                    if (oilType == null) {
+                        oilType = 0;
+                        logger.error("get oil Type error, oilName:" + oilName);
+                    }
+                    Byte oilCategory = null;
+                    for (OilInfo oil : oilCategoryList) {
+                        if (oilName.equals(oil.getOilName()) || oil.getOilName().startsWith(oilNumber)) {
+                            oilCategory = oil.getOilId();
+                            break;
+                        }
+                    }
+                    if (oilCategory == null) {
+                        oilCategory = 0;
+                        logger.error("get oil Category error, oilName:" + oilName + ",oilNumber:" + oilNumber);
+                    }
+                    NozzleOrder no = new NozzleOrder();
+                    no.setNozzleNumber(pumpNumber);
+                    no.setWorkOrder(entity.id);
+                    no.setOilType(oilType);
+                    no.setOilCategory(oilCategory);
+                    no.setPrice(Integer.parseInt(priceStr) / 10);
+                    BigDecimal volume = new BigDecimal(volumeStr);
+                    no.setVolumeConsume(volume.divide(new BigDecimal(1000), 2, RoundingMode.DOWN));
+                    no.setOrderStatus(NozzleOrder.ORDER_NOT_PAYED);
+                    no.setStationCode(stationCode);
+                    no.setUploadStatus(NozzleOrder.UN_UPLOAD);
+                    NozzleOrder check = nos.getOrderByNozzleNumberAndWorkOrder(pumpNumber, entity.id);
+                    if (check == null) {
+                        nos.addOrder(no);
+                    }
                 }
             }
         } catch (IOException e) {
