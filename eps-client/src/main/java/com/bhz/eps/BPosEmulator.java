@@ -3,10 +3,7 @@ package com.bhz.eps;
 import com.bhz.eps.util.Converts;
 import com.bhz.eps.util.Utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collection;
@@ -31,7 +28,7 @@ public class BPosEmulator implements Runnable {
     {//初始化数据
         Properties dataPro = new Properties();
         try {
-            dataPro.load(BPosEmulator.class.getClassLoader().getResourceAsStream("BPOS.data"));
+            dataPro.load(new InputStreamReader(BPosEmulator.class.getClassLoader().getResourceAsStream("BPOS.data"), "UTF-8"));
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("BPosEmulator init data error, BPOS.data file is not exists");
