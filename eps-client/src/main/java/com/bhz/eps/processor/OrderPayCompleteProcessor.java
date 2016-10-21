@@ -145,6 +145,16 @@ public class OrderPayCompleteProcessor extends BizProcessor{
 				e1.printStackTrace();
 			}
 		}
+
+        try{
+            NozzleOrderService nos = Boot.appctx.getBean(
+                    "nozzleOrderService",NozzleOrderService.class);
+            nos.updateOrderStatus(NozzleOrder.ORDER_PAYED,
+                    Integer.toString(Converts.bytes2Int(nozzleCodeArr)), Converts.bcd2Str(orderArr));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
 		
 		//创建返回消息
 				byte[] bizHeaderArr = tpdu.getBody().getHeader().getOriginalContent();
