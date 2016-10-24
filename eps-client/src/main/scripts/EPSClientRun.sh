@@ -5,5 +5,5 @@ for jar in $LIBDIR
   do
 	CLASSPATH=$CLASSPATH:$jar
   done
-java -cp $CLASSPATH com.bhz.eps.Boot
+./jre/bin/java -cp $CLASSPATH com.bhz.eps.Boot
 
