@@ -1,4 +1,5 @@
 #! /bin/bash
+chmod 777 ./jre/bin/java
 CLASSPATH=.
 LIBDIR=`ls lib/*.jar`
 for jar in $LIBDIR
